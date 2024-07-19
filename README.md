@@ -10,7 +10,22 @@
     ```
     
     which yields about 600~800 instances after removing duplicates. Then I manually cleaned up some oddities that are the result of the imperfect grep or line wrapping on “=” breaking some URLs up.
-- Others are sometimes just brute force.
+- Others are basically just brute force.
+  - “But (62 (0-9a-zA-Z) ^ 6) at 100 per second is still over 17 years of continuous work!”
+  - Err, better than nothing, I guess
+
+## Progress
+
+- 0~0000: ongoing
+- 0000~ZZZZ: ongoing
+- aaaa~dddd: waiting
+- dddd~ZZZZ: waiting
+- dddd~ZZZZ: waiting
+- ZZZZ~ZZZZZZ: waiting
+- fb/0~a00: ongoing
+- fb/a00~a000: waiting
+- fb/a000~b000: ongoing
+- fb/b000~ZZZZZZ: waiting
 
 ## Schema
 
