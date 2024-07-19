@@ -116,11 +116,14 @@ function nextSlug(slug: Slug) {
 }
 
 /**
- * Return an infinite sequence of slugs starting from `init`.
+ * Return a sequence of slugs starting from `init`, until it reaches the maximum
+ * value in 6 digits.
+ * If `until` is given, also stop when reaching `until`.
  */
-function* slugs(init?: Slug) {
+function* slugs(init?: Slug, until?: Slug) {
   let current = init || chars[0];
-  while (current.length < 7) {
+  // FIXME: "larger than" `until` should also cause it to stop
+  while (current.length < 7 && current !== until) {
     yield current;
     current = nextSlug(current);
   }
@@ -140,9 +143,11 @@ function* slugs(init?: Slug) {
  * If `prefix` is provided, make the slug "${prefix}/${slug}" instead. Some prefixes:
  * - /fb/ for feedburner.com URLs
  * - /maps/ for Google Maps - are these impacted?
+ *
+ * If `until` is provided, stop at that point instead of continuing indefinitely.
  */
-async function scrape(init?: Slug | Slug[], prefix?: string) {
-  for (const it of Array.isArray(init) ? init : slugs(init)) {
+async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
+  for (const it of Array.isArray(init) ? init : slugs(init, until)) {
     const slug = prefix ? `${prefix}/${it}` : it;
     if (slugStoredExternally(slug) || slugStored(slug) || slugError400(slug)) {
       // console.log(`"${slug}" already stored`);
@@ -189,6 +194,7 @@ const parsedArgs = parseArgs({
     init: { type: "string" },
     slugArrayFile: { type: "string" },
     prefix: { type: "string" },
+    until: { type: "string" },
     export: { type: "boolean" },
   },
 });
@@ -202,5 +208,9 @@ if (parsedArgs.values.export) {
     parsedArgs.values.prefix,
   );
 } else {
-  await scrape(parsedArgs.values.init, parsedArgs.values.prefix);
+  await scrape(
+    parsedArgs.values.init,
+    parsedArgs.values.prefix,
+    parsedArgs.values.until,
+  );
 }
