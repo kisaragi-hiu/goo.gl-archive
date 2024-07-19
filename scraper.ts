@@ -104,7 +104,7 @@ async function scrape(init?: Slug) {
       // console.log(`"${slug}" already stored`);
       continue;
     }
-    console.log(`Storing "${slug}"`);
+    console.write(`${slug} -> `);
     const result = await fetch(`https://goo.gl/${slug}`, {
       method: "head",
       redirect: "manual",
@@ -114,18 +114,22 @@ async function scrape(init?: Slug) {
       if (typeof location === "string") {
         // state: resolved to a URL
         slugInsert(slug, location);
+        console.write(`${location}\n`);
       } else {
         // state: 301/302 but no location
       }
     } else if (result.status === 404) {
       // state: resolved to no mapping
       slugInsert(slug, null);
+      console.write(`NULL\n`);
     } else if (result.status === 302) {
       // state: this is an internal page. Store the status, at least.
       errorInsert(slug, result.status, result.statusText);
+      console.write(`${result.status}\n`);
     } else {
       // state: what the fuck?
       errorInsert(slug, result.status, result.statusText);
+      console.write(`error (${result.status})\n`);
     }
   }
 }
