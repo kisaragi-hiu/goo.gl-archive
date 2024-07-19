@@ -20,6 +20,13 @@ function slugStored(slug: Slug) {
   return !!slugStoredStmt.get(slug);
 }
 
+const slugError400Stmt = db.query(
+  "SELECT slug FROM errors WHERE status = 400 AND slug = ?",
+);
+function slugError400(slug: Slug) {
+  return !!slugError400Stmt.get(slug);
+}
+
 const slugInsertStmt = db.query(`
 INSERT INTO mapping (slug, value) VALUES (?, ?)
 `);
@@ -122,6 +129,10 @@ function* slugs(init?: Slug) {
 /**
  * Do the actual scraping.
  * Start from the slug given as `init`.
+ *
+ * If `init` is actually an array of slugs, iterate through it instead of the
+ * infinite sequence starting from `init`.
+ *
  * Already successfully stored values (including 404, which is a valid value for
  * "this resolves to nothing") are skipped, while errors are stored into a
  * separate table.
@@ -130,10 +141,10 @@ function* slugs(init?: Slug) {
  * - /fb/ for feedburner.com URLs
  * - /maps/ for Google Maps - are these impacted?
  */
-async function scrape(init?: Slug, prefix?: string) {
-  for (const it of slugs(init)) {
+async function scrape(init?: Slug | Slug[], prefix?: string) {
+  for (const it of Array.isArray(init) ? init : slugs(init)) {
     const slug = prefix ? `${prefix}/${it}` : it;
-    if (slugStoredExternally(slug) || slugStored(slug)) {
+    if (slugStoredExternally(slug) || slugStored(slug) || slugError400(slug)) {
       // console.log(`"${slug}" already stored`);
       continue;
     }
