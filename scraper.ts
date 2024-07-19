@@ -118,6 +118,9 @@ async function scrape(init?: Slug) {
     } else if (result.status === 404) {
       // state: resolved to no mapping
       slugInsert(slug, null);
+    } else if (result.status === 302) {
+      // state: this is an internal page. Store the status, at least.
+      errorInsert(slug, result.status, result.statusText);
     } else {
       // state: what the fuck?
       errorInsert(slug, result.status, result.statusText);
