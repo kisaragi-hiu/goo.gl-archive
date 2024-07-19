@@ -37,7 +37,7 @@
 - p000~ZZZZ: waiting
 - ZZZZ~ZZZZZZ: waiting
 - fb/0~a00: ongoing
-- fb/a00~a000: waiting
+- fb/a00~a000: ongoing
 - fb/a000~b000: ongoing
 - fb/b000~c000: waiting
 - fb/c000~d000: waiting
