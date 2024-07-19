@@ -99,7 +99,7 @@ function* slugs(init?: Slug) {
 async function scrape(init?: Slug) {
   for (const slug of slugs(init)) {
     if (slugStored(slug)) {
-      console.log(`"${slug}" already stored`);
+      // console.log(`"${slug}" already stored`);
       continue;
     }
     console.log(`Storing "${slug}"`);
