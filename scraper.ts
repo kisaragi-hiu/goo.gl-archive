@@ -155,6 +155,10 @@ async function scrape(init?: Slug, prefix?: string) {
       // state: resolved to no mapping
       slugInsert(slug, null);
       console.write(`NULL\n`);
+    } else if (result.status === 400) {
+      // state: disallowed / blocked link
+      errorInsert(slug, result.status, result.statusText);
+      console.write(`disallowed\n`);
     } else if (result.status === 302) {
       // state: this is an internal page. Store the status, at least.
       errorInsert(slug, result.status, result.statusText);
