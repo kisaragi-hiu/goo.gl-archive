@@ -21,7 +21,7 @@
 - 5000~a000: ongoing
 - a000~b000: ongoing
 - b000~c000: ongoing
-- c000~d000: waiting
+- c000~d000: ongoing
 - d000~e000: waiting
 - e000~f000: waiting
 - f000~g000: waiting
