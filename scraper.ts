@@ -83,7 +83,7 @@ function nextSlug(slug: Slug) {
  */
 function* slugs(init?: Slug) {
   let current = init || "a";
-  while (current.length < 2) {
+  while (current.length < 5) {
     yield current;
     current = nextSlug(current);
   }
