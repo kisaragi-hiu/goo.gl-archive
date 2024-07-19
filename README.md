@@ -1,5 +1,9 @@
 # An attempt at archiving goo.gl
 
+## Archived links
+
+- [Uses on LKML](https://lore.kernel.org/all/?q=goo.gl%2F) should all be stored, apart from usages of `images.app.goo.gl`, `maps.app.goo.gl`, and `photos.app.goo.gl`.
+
 ## Schema
 
 - table: mapping

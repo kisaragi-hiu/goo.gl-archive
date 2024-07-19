@@ -187,6 +187,7 @@ const parsedArgs = parseArgs({
   args: Bun.argv.slice(2),
   options: {
     init: { type: "string" },
+    slugArrayFile: { type: "string" },
     prefix: { type: "string" },
     export: { type: "boolean" },
   },
@@ -195,6 +196,11 @@ const parsedArgs = parseArgs({
 if (parsedArgs.values.export) {
   writeCurrentSlugs();
   console.log("Current slugs have been written to external-slugs.json");
+} else if (typeof parsedArgs.values.slugArrayFile === "string") {
+  await scrape(
+    await Bun.file(parsedArgs.values.slugArrayFile).json(),
+    parsedArgs.values.prefix,
+  );
 } else {
   await scrape(parsedArgs.values.init, parsedArgs.values.prefix);
 }
