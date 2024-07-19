@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "esnext",
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "lib": ["esnext"],
+    "module": "preserve",
+    "jsx": "react-jsx",
+
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "declaration": true,
+    "isolatedDeclarations": true
+  }
+}
