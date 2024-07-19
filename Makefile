@@ -13,3 +13,7 @@ copyDbFromRemote:
 		make checkpoint
 	HERE
 	scp "$(SSH_HOST):/home/kisaragi/goo.gl-archive/data.sqlite" remote-data.sqlite
+
+mergeRemoteData: copyDbFromRemote
+	bun merge.ts data.sqlite remote-data.sqlite
+	rm remote-data.sqlite
