@@ -167,9 +167,10 @@ async function scrape(init?: Slug | Slug[], prefix?: string) {
       slugInsert(slug, null);
       console.write(`NULL\n`);
     } else if (result.status === 400) {
-      // state: disallowed / blocked link
+      // state: generic error? Disallowed (blocked) links use this, some
+      // "invalid dynamic link" errors also use this.
       errorInsert(slug, result.status, result.statusText);
-      console.write(`disallowed\n`);
+      console.write(`400\n`);
     } else if (result.status === 302) {
       // state: this is an internal page. Store the status, at least.
       errorInsert(slug, result.status, result.statusText);
