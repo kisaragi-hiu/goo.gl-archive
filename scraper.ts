@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import { parseArgs } from "node:util";
 
 const db = new Database("data.sqlite", { create: true, strict: true });
 db.run("PRAGMA journal_mode=WAL;");
@@ -127,3 +128,9 @@ async function scrape(init?: Slug) {
     }
   }
 }
+
+const parsedArgs = parseArgs({
+  args: Bun.argv.slice(2),
+  options: { init: { type: "string" } },
+});
+await scrape(parsedArgs.values.init);
