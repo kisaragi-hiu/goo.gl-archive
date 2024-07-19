@@ -3,6 +3,7 @@ import { parseArgs } from "node:util";
 
 const db = new Database("data.sqlite", { create: true, strict: true });
 db.run("PRAGMA journal_mode=WAL;");
+db.run("PRAGMA busy_timeout=100");
 db.run("CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT)");
 db.run(
   "CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT)",
