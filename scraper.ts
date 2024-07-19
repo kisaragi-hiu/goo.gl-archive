@@ -36,11 +36,11 @@ function errorInsert(slug: Slug, status: number, message: string) {
   return errorInsertStmt.run(slug, status, message);
 }
 
-const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const charIndexMap = new Map([...chars].map((c, i) => [c, i]));
 /**
  * Return the next character after `char` in the valid character sequence.
- * The sequence is basically a-zA-Z.
+ * The sequence is basically a-zA-Z0-9.
  * An error is thrown if `char` is not in the sequence.
  *
  * Returns undefined as the character after the last character. It is up to the
@@ -54,9 +54,9 @@ function nextChar(char: string) {
 
 /**
  * Return the slug that's one bigger than `slug`.
- * For example, the slug after "aaa" is "aab", and the one after "ZZZ" is "aaaa".
+ * For example, the slug after "aaa" is "aab", and the one after "999" is "aaaa".
  *
- * In effect these are base-52 numbers written with a-zA-Z, and this function
+ * In effect these are base-62 numbers written with a-zA-Z0-9, and this function
  * increments the input.
  */
 function nextSlug(slug: Slug) {
@@ -75,7 +75,7 @@ function nextSlug(slug: Slug) {
       newChars.push(slug[i]);
     }
   }
-  // If carry is still true, that means we've just reached eg. "ZZZ".
+  // If carry is still true, that means we've just reached eg. "999".
   if (carry) newChars.push(chars[0]);
   return newChars.reverse().join("");
 }
