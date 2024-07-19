@@ -13,6 +13,8 @@ db.run(
 
 type Slug = string;
 
+/* Writing */
+
 const slugStoredStmt = db.query("SELECT slug FROM mapping WHERE slug = ?");
 function slugStored(slug: Slug) {
   return !!slugStoredStmt.get(slug);
@@ -35,6 +37,35 @@ INSERT INTO errors (slug, status, message) VALUES (?, ?, ?)
 function errorInsert(slug: Slug, status: number, message: string) {
   return errorInsertStmt.run(slug, status, message);
 }
+
+/* Reading DB */
+function writeCurrentSlugs() {
+  Bun.write(
+    "external-slugs.json",
+    JSON.stringify(
+      db
+        .query("select slug from mapping")
+        .all()
+        .map((obj) => (obj as { slug: Slug }).slug),
+    ),
+  );
+}
+
+async function readExternalSlugs(): Promise<Slug[]> {
+  try {
+    return (await Bun.file("external-slugs.json").json()) as Slug[];
+  } catch (_e) {
+    return [];
+  }
+}
+
+const externalSlugs = new Set(await readExternalSlugs());
+
+function slugStoredExternally(slug: Slug) {
+  return externalSlugs.has(slug);
+}
+
+/* Iterating */
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const charIndexMap = new Map([...chars].map((c, i) => [c, i]));
@@ -102,7 +133,7 @@ function* slugs(init?: Slug) {
 async function scrape(init?: Slug, prefix?: string) {
   for (const it of slugs(init)) {
     const slug = prefix ? `${prefix}/${it}` : it;
-    if (slugStored(slug)) {
+    if (slugStoredExternally(slug) || slugStored(slug)) {
       // console.log(`"${slug}" already stored`);
       continue;
     }
@@ -138,6 +169,16 @@ async function scrape(init?: Slug, prefix?: string) {
 
 const parsedArgs = parseArgs({
   args: Bun.argv.slice(2),
-  options: { init: { type: "string" }, prefix: { type: "string" } },
+  options: {
+    init: { type: "string" },
+    prefix: { type: "string" },
+    export: { type: "boolean" },
+  },
 });
-await scrape(parsedArgs.values.init, parsedArgs.values.prefix);
+
+if (parsedArgs.values.export) {
+  writeCurrentSlugs();
+  console.log("Current slugs have been written to external-slugs.json");
+} else {
+  await scrape(parsedArgs.values.init, parsedArgs.values.prefix);
+}
