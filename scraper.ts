@@ -74,7 +74,7 @@ function slugStoredExternally(slug: Slug) {
 
 /* Iterating */
 
-const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const charIndexMap = new Map([...chars].map((c, i) => [c, i]));
 /**
  * Return the next character after `char` in the valid character sequence.
