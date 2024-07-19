@@ -28,3 +28,14 @@ currentJobs:
 	nohup bun scraper.ts --init a000 --until b000 >/dev/null&
 	nohup bun scraper.ts --init b000 --until c000 >/dev/null&
 	nohup bun scraper.ts --init c000 --until d000 >/dev/null&
+
+currentJobsHup:
+	bun scraper.ts --prefix fb --init 0 --until a00&
+	bun scraper.ts --prefix fb --init a00 --until a000&
+	bun scraper.ts --prefix fb --init a000 --until b000&
+	bun scraper.ts --init 0 --until 0000&
+	bun scraper.ts --init 0000 --until 5000&
+	bun scraper.ts --init 5000 --until a000&
+	bun scraper.ts --init a000 --until b000&
+	bun scraper.ts --init b000 --until c000&
+	bun scraper.ts --init c000 --until d000&
