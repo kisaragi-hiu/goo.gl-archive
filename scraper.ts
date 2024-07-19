@@ -55,9 +55,6 @@ function nextChar(char: string) {
 /**
  * Return the slug that's one bigger than `slug`.
  * For example, the slug after "aaa" is "aab", and the one after "999" is "aaaa".
- *
- * In effect these are base-62 numbers written with a-zA-Z0-9, and this function
- * increments the input.
  */
 function nextSlug(slug: Slug) {
   let carry = true;
@@ -97,9 +94,14 @@ function* slugs(init?: Slug) {
  * Already successfully stored values (including 404, which is a valid value for
  * "this resolves to nothing") are skipped, while errors are stored into a
  * separate table.
+ *
+ * If `prefix` is provided, make the slug "${prefix}/${slug}" instead. Some prefixes:
+ * - /fb/ for feedburner.com URLs
+ * - /maps/ for Google Maps - are these impacted?
  */
-async function scrape(init?: Slug) {
-  for (const slug of slugs(init)) {
+async function scrape(init?: Slug, prefix?: string) {
+  for (const it of slugs(init)) {
+    const slug = prefix ? `${prefix}/${it}` : it;
     if (slugStored(slug)) {
       // console.log(`"${slug}" already stored`);
       continue;
@@ -136,6 +138,6 @@ async function scrape(init?: Slug) {
 
 const parsedArgs = parseArgs({
   args: Bun.argv.slice(2),
-  options: { init: { type: "string" } },
+  options: { init: { type: "string" }, prefix: { type: "string" } },
 });
-await scrape(parsedArgs.values.init);
+await scrape(parsedArgs.values.init, parsedArgs.values.prefix);
