@@ -7,7 +7,7 @@ db.run(
   "CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT)",
 );
 
-// A goo.gl link is goo.gl/[slug] which maps to the original URL
+// A "slug" is the "abcde" in "goo.gl/abcde".
 
 type Slug = string;
 
@@ -36,12 +36,27 @@ function errorInsert(slug: Slug, status: number, message: string) {
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const charIndexMap = new Map([...chars].map((c, i) => [c, i]));
+/**
+ * Return the next character after `char` in the valid character sequence.
+ * The sequence is basically a-zA-Z.
+ * An error is thrown if `char` is not in the sequence.
+ *
+ * Returns undefined as the character after the last character. It is up to the
+ * caller to handle that correctly, doing carry or wrapping around as appropriate.
+ */
 function nextChar(char: string) {
   const index = charIndexMap.get(char);
   if (typeof index === "undefined") throw new Error("Invalid character");
   return chars[index + 1];
 }
 
+/**
+ * Return the slug that's one bigger than `slug`.
+ * For example, the slug after "aaa" is "aab", and the one after "ZZZ" is "aaaa".
+ *
+ * In effect these are base-52 numbers written with a-zA-Z, and this function
+ * increments the input.
+ */
 function nextSlug(slug: Slug) {
   let carry = true;
   const newChars = [];
@@ -63,6 +78,9 @@ function nextSlug(slug: Slug) {
   return newChars.reverse().join("");
 }
 
+/**
+ * Return an infinite sequence of slugs starting from `init`.
+ */
 function* slugs(init?: Slug) {
   let current = init || "a";
   while (current.length < 2) {
@@ -71,6 +89,13 @@ function* slugs(init?: Slug) {
   }
 }
 
+/**
+ * Do the actual scraping.
+ * Start from the slug given as `init`.
+ * Already successfully stored values (including 404, which is a valid value for
+ * "this resolves to nothing") are skipped, while errors are stored into a
+ * separate table.
+ */
 async function scrape(init?: Slug) {
   for (const slug of slugs(init)) {
     if (slugStored(slug)) {
