@@ -84,7 +84,7 @@ function nextSlug(slug: Slug) {
  * Return an infinite sequence of slugs starting from `init`.
  */
 function* slugs(init?: Slug) {
-  let current = init || "a";
+  let current = init || chars[0];
   while (current.length < 5) {
     yield current;
     current = nextSlug(current);
