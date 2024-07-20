@@ -17,15 +17,15 @@ type Slug = string;
 /* Writing */
 
 const slugStoredStmt = db.query("SELECT slug FROM mapping WHERE slug = ?");
-function slugStored(slug: Slug) {
-  return !!slugStoredStmt.get(slug);
-}
-
 const slugError400Stmt = db.query(
   "SELECT slug FROM errors WHERE status = 400 AND slug = ?",
 );
-function slugError400(slug: Slug) {
-  return !!slugError400Stmt.get(slug);
+function slugStored(slug: Slug) {
+  return (
+    slugStoredExternally(slug) ||
+    !!slugStoredStmt.get(slug) ||
+    !!slugError400Stmt.get(slug)
+  );
 }
 
 const slugInsertStmt = db.query(`
@@ -176,7 +176,7 @@ function* slugs(init?: Slug, until?: Slug) {
 async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
   for (const it of Array.isArray(init) ? init : slugs(init, until)) {
     const slug = prefix ? `${prefix}/${it}` : it;
-    if (slugStoredExternally(slug) || slugStored(slug) || slugError400(slug)) {
+    if (slugStored(slug)) {
       // console.log(`"${slug}" already stored`);
       continue;
     }
