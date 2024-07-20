@@ -1,14 +1,14 @@
-import { Database, SQLiteError } from "bun:sqlite";
+import Database, { SqliteError } from "better-sqlite3";
+import { readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
-import { shuffle } from "lodash";
+import shuffle from "lodash/shuffle";
 
-const db = new Database("data.sqlite", { create: true, strict: true });
-db.run("PRAGMA busy_timeout=1000");
-db.run("PRAGMA journal_mode=WAL;");
-db.run("CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT)");
-db.run(
-  "CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT)",
-);
+const db = new Database("data.sqlite", { timeout: 1000 });
+db.exec(`
+PRAGMA journal_mode=WAL;
+CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
+CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
+`);
 
 // A "slug" is the "abcde" in "goo.gl/abcde".
 
@@ -16,8 +16,8 @@ type Slug = string;
 
 /* Writing */
 
-const slugStoredStmt = db.query("SELECT slug FROM mapping WHERE slug = ?");
-const slugError400Stmt = db.query(
+const slugStoredStmt = db.prepare("SELECT slug FROM mapping WHERE slug = ?");
+const slugError400Stmt = db.prepare(
   "SELECT slug FROM errors WHERE status = 400 AND slug = ?",
 );
 function slugStored(slug: Slug) {
@@ -28,7 +28,7 @@ function slugStored(slug: Slug) {
   );
 }
 
-const slugInsertStmt = db.query(`
+const slugInsertStmt = db.prepare(`
 INSERT INTO mapping (slug, value) VALUES (?, ?)
 `);
 function slugInsert(slug: Slug, value: string | null) {
@@ -37,7 +37,7 @@ function slugInsert(slug: Slug, value: string | null) {
   } catch (e) {
     // This means something else has inserted the slug between the check and now.
     // Just keep going.
-    if (e instanceof SQLiteError && e.code === "SQLITE_CONSTRAINT_UNIQUE") {
+    if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_UNIQUE") {
       console.log(`${slug} is already present`);
       return 0;
     }
@@ -45,7 +45,7 @@ function slugInsert(slug: Slug, value: string | null) {
   }
 }
 
-const errorInsertStmt = db.query(`
+const errorInsertStmt = db.prepare(`
 INSERT INTO errors (slug, status, message) VALUES (?, ?, ?)
   ON CONFLICT(slug)
   DO UPDATE SET
@@ -61,7 +61,7 @@ function errorInsert(slug: Slug, status: number, message: string) {
 /** Return slugs that have been stored. */
 function getCurrentSlugs(): string[] {
   return db
-    .query("select slug from mapping")
+    .prepare("select slug from mapping")
     .all()
     .map((obj) => (obj as { slug: Slug }).slug);
 }
@@ -69,7 +69,9 @@ function getCurrentSlugs(): string[] {
 /** Return slugs of goo.gl links mentioned in values. */
 function getMentions(): string[] {
   return db
-    .query("select distinct value from mapping where value LIKE '%//goo.gl/%'")
+    .prepare(
+      "select distinct value from mapping where value LIKE '%//goo.gl/%'",
+    )
     .all()
     .map((obj) => (obj as { value: string }).value)
     .map((s) => {
@@ -82,7 +84,9 @@ function getMentions(): string[] {
 
 async function readExternalSlugs(): Promise<Slug[]> {
   try {
-    return (await Bun.file("external-slugs.json").json()) as Slug[];
+    return JSON.parse(
+      readFileSync("external-slugs.json", { encoding: "utf-8" }),
+    ) as Slug[];
   } catch (_e) {
     return [];
   }
@@ -210,7 +214,7 @@ async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
 }
 
 const parsedArgs = parseArgs({
-  args: Bun.argv.slice(2),
+  args: process.argv.slice(2),
   options: {
     init: { type: "string" },
     slugArrayFile: { type: "string" },
@@ -222,16 +226,20 @@ const parsedArgs = parseArgs({
 });
 
 if (parsedArgs.values.export) {
-  Bun.write("external-slugs.json", JSON.stringify(getCurrentSlugs()));
+  writeFileSync("external-slugs.json", JSON.stringify(getCurrentSlugs()));
   console.log("Current slugs have been written to external-slugs.json");
 } else if (parsedArgs.values.exportMentions) {
-  Bun.write("mentioned-slugs.json", JSON.stringify(getMentions()));
+  writeFileSync("mentioned-slugs.json", JSON.stringify(getMentions()));
   console.log(
     "Slugs mentioned in the current values have been written to mentioned-slugs.json",
   );
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
   await scrape(
-    shuffle(await Bun.file(parsedArgs.values.slugArrayFile).json()),
+    shuffle(
+      JSON.parse(
+        readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
+      ) as Slug[],
+    ),
     parsedArgs.values.prefix,
   );
 } else {

@@ -1,3 +1,13 @@
 {
-  "dependencies": { "concurrently": "^8.2.2", "lodash": "^4.17.21" }
+  "dependencies": {
+    "better-sqlite3": "^11.1.2",
+    "concurrently": "^8.2.2",
+    "lodash": "^4.17.21",
+    "tsx": "^4.16.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/lodash": "^4.17.7"
+  },
+  "type": "module"
 }
