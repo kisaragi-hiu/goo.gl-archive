@@ -42,15 +42,13 @@ currentJobsA:
 	npx concurrently \
 		--restart-tries 5 \
 		"npx tsx scraper.ts --init 1000 --until 2000" \
-		"sleep 0.1; npx tsx scraper.ts --init 5000 --until a000" \
-		"sleep 0.2; npx tsx scraper.ts --init a000 --until b000" \
-		"sleep 0.3; npx tsx scraper.ts --init b000 --until c000" \
-		"sleep 0.4; npx tsx scraper.ts --init D000 --until E000" \
-		"sleep 0.4; npx tsx scraper.ts --init E000 --until F000" \
-		"sleep 0.4; npx tsx scraper.ts --init F000 --until G000" \
-		"sleep 0.5; npx tsx scraper.ts --init M000 --until N000" \
-		"sleep 0.6; npx tsx scraper.ts --prefix fb --init a00 --until a000" \
-		"sleep 0.7; npx tsx scraper.ts --prefix fb --init a000 --until b000"
+		"npx tsx scraper.ts --init 5000 --until a000" \
+		"npx tsx scraper.ts --init a000 --until b000" \
+		"npx tsx scraper.ts --init b000 --until c000" \
+		"npx tsx scraper.ts --init E000 --until F000" \
+		"npx tsx scraper.ts --init M000 --until N000" \
+		"npx tsx scraper.ts --prefix fb --init a00 --until a000" \
+		"npx tsx scraper.ts --prefix fb --init a000 --until b000"
 
 currentJobsB:
 	npx concurrently \

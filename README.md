@@ -52,9 +52,9 @@
 - A000~B000: pending
 - B000~C000: pending
 - C000~D000: pending
-- D000~E000: A
+- D000~E000: pending
 - E000~F000: A
-- F000~G000: A
+- F000~G000: pending
 - G000~H000: pending
 - H000~I000: B
 - I000~J000: pending
