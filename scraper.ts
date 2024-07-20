@@ -38,7 +38,7 @@ function slugInsert(slug: Slug, value: string | null) {
     // This means something else has inserted the slug between the check and now.
     // Just keep going.
     if (e.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      console.log(`${slug} is already present`)
+      console.log(`${slug} is already present`);
       return 0;
     }
     throw e;
@@ -58,39 +58,31 @@ function errorInsert(slug: Slug, status: number, message: string) {
 
 /* Reading DB */
 
-/**
- * Write out mentions of goo.gl in values.
- */
-function writeMentions() {
-  Bun.write(
-    "mentioned-slugs.json",
-    JSON.stringify(
-      db
-        .query(
-          "select distinct value from mapping where value LIKE '%//goo.gl/%'",
-        )
-        .all()
-        .map((obj) => (obj as { value: string }).value)
-        .map((s) => {
-          const m = s.match(/https?:\/\/goo\.gl\/((?:fb\/)?[a-zA-Z0-9]+)/);
-          if (m !== null) return m[1];
-        })
-        .filter((s) => typeof s !== "undefined")
-        .sort(),
-    ),
-  );
+/** Return slugs that have been stored. */
+function getCurrentSlugs(): string[] {
+  return db
+    .query("select slug from mapping")
+    .all()
+    .map((obj) => (obj as { slug: Slug }).slug);
 }
 
-function writeCurrentSlugs() {
-  Bun.write(
-    "external-slugs.json",
-    JSON.stringify(
-      db
-        .query("select slug from mapping")
-        .all()
-        .map((obj) => (obj as { slug: Slug }).slug),
-    ),
+/** Return slugs of goo.gl links mentioned in values. */
+function getMentions(): string[] {
+  const mentions = new Set(
+    db
+      .query(
+        "select distinct value from mapping where value LIKE '%//goo.gl/%'",
+      )
+      .all()
+      .map((obj) => (obj as { value: string }).value)
+      .map((s) => {
+        const m = s.match(/https?:\/\/goo\.gl\/((?:fb\/)?[a-zA-Z0-9]+)/);
+        if (m !== null) return m[1];
+      })
+      .filter((s) => typeof s !== "undefined"),
   );
+  const currentSlugs = new Set(getCurrentSlugs());
+  return [...mentions.difference(currentSlugs)].sort();
 }
 
 async function readExternalSlugs(): Promise<Slug[]> {
@@ -235,10 +227,10 @@ const parsedArgs = parseArgs({
 });
 
 if (parsedArgs.values.export) {
-  writeCurrentSlugs();
+  Bun.write("external-slugs.json", JSON.stringify(getCurrentSlugs()));
   console.log("Current slugs have been written to external-slugs.json");
 } else if (parsedArgs.values.exportMentions) {
-  writeMentions();
+  Bun.write("mentioned-slugs.json", JSON.stringify(getMentions()));
   console.log(
     "Slugs mentioned in the current values have been written to mentioned-slugs.json",
   );

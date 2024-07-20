@@ -26,10 +26,6 @@ scrapeMentions:
 		"sleep 0.1; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
 		"sleep 0.2; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
 		"sleep 0.3; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.4; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.5; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.6; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.7; bun scraper.ts --slugArrayFile 'mentioned-slugs.json'"
 
 currentJobsA:
 	bunx concurrently \
