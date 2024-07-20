@@ -45,7 +45,9 @@ currentJobsA:
 		"bun scraper-bun.ts --init 5000 --until a000" \
 		"bun scraper-bun.ts --init a000 --until b000" \
 		"bun scraper-bun.ts --init b000 --until c000" \
+		"bun scraper-bun.ts --init D000 --until E000" \
 		"bun scraper-bun.ts --init E000 --until F000" \
+		"bun scraper-bun.ts --init F000 --until G000" \
 		"bun scraper-bun.ts --init M000 --until N000" \
 		"bun scraper-bun.ts --prefix fb --init a00 --until a000" \
 		"bun scraper-bun.ts --prefix fb --init a000 --until b000"
