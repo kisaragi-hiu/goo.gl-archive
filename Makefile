@@ -18,7 +18,7 @@ mergeRemoteData: copyDbFromRemote
 	bun merge.ts data.sqlite remote-data.sqlite
 	rm remote-data.sqlite
 
-currentJobs:
+currentJobsA:
 	nohup bun scraper.ts --init 1000 --until 2000 >/dev/null&
 	sleep 0.1
 	nohup bun scraper.ts --init 2000 --until 5000 >/dev/null&
@@ -38,3 +38,9 @@ currentJobs:
 	nohup bun scraper.ts --prefix fb --init a00 --until a000 >/dev/null&
 	sleep 0.1
 	nohup bun scraper.ts --prefix fb --init a000 --until b000 >/dev/null&
+
+currentJobsB:
+	concurrently \
+		"bun scraper.ts --init d000 --until e000" \
+		"sleep 0.1; bun scraper.ts --init g000 --until h000" \
+		"sleep 0.2; bun scraper.ts --init R000 --until S000"
