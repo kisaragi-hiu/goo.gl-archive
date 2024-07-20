@@ -1,6 +1,10 @@
 SSH_HOST := kisaragi@git.kisaragi-hiu.com
 .ONESHELL:
 
+backup:
+	make checkpoint
+	cp data.sqlite "data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
+
 exportToRemote:
 	bun scraper.ts --export; scp external-slugs.json "$(SSH_HOST):/home/kisaragi/goo.gl-archive/external-slugs.json"
 
@@ -17,6 +21,10 @@ copyDbFromRemote:
 mergeRemoteData: copyDbFromRemote
 	bun merge.ts data.sqlite remote-data.sqlite
 	rm remote-data.sqlite
+	ssh "$(SSH_HOST)" bash << HERE
+		cd /home/kisaragi/goo.gl-archive/
+		rm data.sqlite
+	HERE
 
 scrapeMentions:
 	bun scraper.ts --exportMentions
@@ -34,10 +42,10 @@ currentJobsA:
 		"sleep 0.1; bun scraper.ts --init 5000 --until a000" \
 		"sleep 0.2; bun scraper.ts --init a000 --until b000" \
 		"sleep 0.3; bun scraper.ts --init b000 --until c000" \
-		"sleep 0.4; bun scraper.ts --init D000 --until E000" \
-		"sleep 0.5; bun scraper.ts --init M000 --until N000" \
-		"sleep 0.6; bun scraper.ts --prefix fb --init a00 --until a000" \
-		"sleep 0.7; bun scraper.ts --prefix fb --init a000 --until b000"
+		# "sleep 0.4; bun scraper.ts --init D000 --until E000" \
+		# "sleep 0.5; bun scraper.ts --init M000 --until N000" \
+		# "sleep 0.6; bun scraper.ts --prefix fb --init a00 --until a000" \
+		# "sleep 0.7; bun scraper.ts --prefix fb --init a000 --until b000"
 
 currentJobsB:
 	bunx concurrently \
