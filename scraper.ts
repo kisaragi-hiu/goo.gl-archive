@@ -1,5 +1,6 @@
 import { Database } from "bun:sqlite";
 import { parseArgs } from "node:util";
+import { shuffle } from "lodash";
 
 const db = new Database("data.sqlite", { create: true, strict: true });
 db.run("PRAGMA busy_timeout=1000");
@@ -233,7 +234,7 @@ if (parsedArgs.values.export) {
   );
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
   await scrape(
-    await Bun.file(parsedArgs.values.slugArrayFile).json(),
+    shuffle(await Bun.file(parsedArgs.values.slugArrayFile).json()),
     parsedArgs.values.prefix,
   );
 } else {
