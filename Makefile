@@ -21,10 +21,6 @@ copyDbFromRemote:
 mergeRemoteData: copyDbFromRemote
 	bun merge.ts data.sqlite remote-data.sqlite
 	rm remote-data.sqlite
-	ssh "$(SSH_HOST)" bash << HERE
-		cd /home/kisaragi/goo.gl-archive/
-		rm data.sqlite
-	HERE
 
 scrapeMentions:
 	bun scraper.ts --exportMentions
