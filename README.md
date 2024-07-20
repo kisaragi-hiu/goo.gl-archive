@@ -31,7 +31,7 @@
 - h000~i000: waiting
 - i000~j000: waiting
 - j000~k000: waiting
-- k000~l000: waiting
+- k000~l000: B
 - l000~m000: waiting
 - m000~n000: waiting
 - n000~o000: waiting

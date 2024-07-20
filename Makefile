@@ -40,4 +40,5 @@ currentJobsB:
 		"bun scraper.ts --init d000 --until e000" \
 		"sleep 0.1; bun scraper.ts --init g000 --until h000" \
 		"sleep 0.2; bun scraper.ts --init R000 --until S000" \
-		"sleep 0.3; bun scraper.ts --prefix fb --init j000 --until k000"
+		"sleep 0.3; bun scraper.ts --init k000 --until l000" \
+		"sleep 0.4; bun scraper.ts --prefix fb --init j000 --until k000"
