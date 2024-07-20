@@ -2,3 +2,4 @@ external-slugs.json
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+node_modules

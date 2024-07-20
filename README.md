@@ -19,11 +19,11 @@
 - 0~0000: done
 - 0000~1000: waiting
 - 1000~2000: A
-- 2000~5000: A
+- 2000~5000: waiting
 - 5000~a000: A
 - a000~b000: A
 - b000~c000: A
-- c000~d000: A
+- c000~d000: waiting
 - d000~e000: B
 - e000~f000: waiting
 - f000~g000: waiting
@@ -55,7 +55,7 @@
 - fb/g000~h000: waiting
 - fb/h000~i000: waiting
 - fb/i000~j000: waiting
-- fb/j000~k000: waiting
+- fb/j000~k000: B
 - fb/k000~l000: waiting
 - fb/l000~m000: waiting
 - fb/m000~n000: waiting
