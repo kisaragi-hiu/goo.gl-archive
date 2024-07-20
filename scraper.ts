@@ -68,21 +68,16 @@ function getCurrentSlugs(): string[] {
 
 /** Return slugs of goo.gl links mentioned in values. */
 function getMentions(): string[] {
-  const mentions = new Set(
-    db
-      .query(
-        "select distinct value from mapping where value LIKE '%//goo.gl/%'",
-      )
-      .all()
-      .map((obj) => (obj as { value: string }).value)
-      .map((s) => {
-        const m = s.match(/https?:\/\/goo\.gl\/((?:fb\/)?[a-zA-Z0-9]+)/);
-        if (m !== null) return m[1];
-      })
-      .filter((s) => typeof s !== "undefined"),
-  );
-  const currentSlugs = new Set(getCurrentSlugs());
-  return [...mentions.difference(currentSlugs)].sort();
+  return db
+    .query("select distinct value from mapping where value LIKE '%//goo.gl/%'")
+    .all()
+    .map((obj) => (obj as { value: string }).value)
+    .map((s) => {
+      const m = s.match(/https?:\/\/goo\.gl\/((?:fb\/)?[a-zA-Z0-9]+)/);
+      if (m !== null) return m[1];
+    })
+    .filter((s) => typeof s !== "undefined")
+    .filter((slug) => !slugStored(slug));
 }
 
 async function readExternalSlugs(): Promise<Slug[]> {
