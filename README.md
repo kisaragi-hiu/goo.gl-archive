@@ -44,10 +44,10 @@
 - H000~I000: B
 - I000~J000: waiting
 - J000~K000: waiting
-- K000~L000: waiting
-- L000~M000: waiting
+- K000~L000: B
+- L000~M000: B
 - M000~N000: A
-- N000~R000: waiting
+- N000~R000: B
 - R000~S000: B
 - S000~ZZZZ: waiting
 - ZZZZ~ZZZZZZ: waiting
