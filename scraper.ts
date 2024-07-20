@@ -153,7 +153,6 @@ async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
       // console.log(`"${slug}" already stored`);
       continue;
     }
-    console.write(`${slug} -> `);
     const result = await fetch(`https://goo.gl/${slug}`, {
       method: "head",
       redirect: "manual",
@@ -163,27 +162,27 @@ async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
       if (typeof location === "string") {
         // state: resolved to a URL
         slugInsert(slug, location);
-        console.write(`${location}\n`);
+        console.log(`${slug} -> ${location}`);
       } else {
         // state: 301/302 but no location
       }
     } else if (result.status === 404) {
       // state: resolved to no mapping
       slugInsert(slug, null);
-      console.write(`NULL\n`);
+      console.log(`${slug} -> NULL`);
     } else if (result.status === 400) {
       // state: generic error? Disallowed (blocked) links use this, some
       // "invalid dynamic link" errors also use this.
       errorInsert(slug, result.status, result.statusText);
-      console.write(`400\n`);
+      console.log(`${slug} -> 400`);
     } else if (result.status === 302) {
       // state: this is an internal page. Store the status, at least.
       errorInsert(slug, result.status, result.statusText);
-      console.write(`${result.status}\n`);
+      console.log(`${slug} -> ${result.status}`);
     } else {
       // state: what the fuck?
       errorInsert(slug, result.status, result.statusText);
-      console.write(`error (${result.status})\n`);
+      console.log(`${slug} -> error (${result.status})`);
     }
   }
 }
