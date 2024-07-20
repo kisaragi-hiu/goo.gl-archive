@@ -38,8 +38,8 @@
 - o000~p000: waiting
 - p000~D000: waiting
 - D000~E000: A
-- E000~F000: waiting
-- F000~G000: waiting
+- E000~F000: A
+- F000~G000: A
 - G000~H000: waiting
 - H000~I000: B
 - I000~J000: waiting
