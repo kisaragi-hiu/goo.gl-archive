@@ -70,3 +70,14 @@ currentJobsB:
 		"npx tsx scraper.ts --prefix fb --init j000 --until k000" \
 		"npx tsx scraper.ts --prefix fb --init o000 --until p000" \
 		"npx tsx scraper.ts --prefix fb --init g000 --until h000"
+
+currentJobsC:
+	npx concurrently \
+		--restart-tries 5 \
+		"npx tsx scraper.ts --init q000 --until r000" \
+		"npx tsx scraper.ts --init r000 --until s000" \
+		"npx tsx scraper.ts --init v000 --until w000" \
+		"npx tsx scraper.ts --init w000 --until x000" \
+		"npx tsx scraper.ts --init x000 --until y000" \
+		"npx tsx scraper.ts --init y000 --until z000" \
+		"npx tsx scraper.ts --init T000 --until U000"
