@@ -19,15 +19,11 @@ mergeRemoteData: copyDbFromRemote
 	rm remote-data.sqlite
 
 currentJobs:
-	nohup bun scraper.ts --prefix fb --init 0 --until a00 >/dev/null&
+	nohup bun scraper.ts --init 0000 --until 1000 >/dev/null&
 	sleep 0.1
-	nohup bun scraper.ts --prefix fb --init a00 --until a000 >/dev/null&
+	nohup bun scraper.ts --init 1000 --until 2000 >/dev/null&
 	sleep 0.1
-	nohup bun scraper.ts --prefix fb --init a000 --until b000 >/dev/null&
-	sleep 0.1
-	nohup bun scraper.ts --init 0 --until 0000 >/dev/null&
-	sleep 0.1
-	nohup bun scraper.ts --init 0000 --until 5000 >/dev/null&
+	nohup bun scraper.ts --init 2000 --until 5000 >/dev/null&
 	sleep 0.1
 	nohup bun scraper.ts --init 5000 --until a000 >/dev/null&
 	sleep 0.1
@@ -36,3 +32,7 @@ currentJobs:
 	nohup bun scraper.ts --init b000 --until c000 >/dev/null&
 	sleep 0.1
 	nohup bun scraper.ts --init c000 --until d000 >/dev/null&
+	sleep 0.1
+	nohup bun scraper.ts --prefix fb --init a00 --until a000 >/dev/null&
+	sleep 0.1
+	nohup bun scraper.ts --prefix fb --init a000 --until b000 >/dev/null&

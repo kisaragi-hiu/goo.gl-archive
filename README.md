@@ -16,8 +16,10 @@
 
 ## Progress
 
-- 0~0000: ongoing
-- 0000~5000: ongoing
+- 0~0000: done
+- 0000~1000: ongoing
+- 1000~2000: ongoing
+- 2000~5000: ongoing
 - 5000~a000: ongoing
 - a000~b000: ongoing
 - b000~c000: ongoing
@@ -36,7 +38,7 @@
 - o000~p000: waiting
 - p000~ZZZZ: waiting
 - ZZZZ~ZZZZZZ: waiting
-- fb/0~a00: ongoing
+- fb/0~a00: done
 - fb/a00~a000: ongoing
 - fb/a000~b000: ongoing
 - fb/b000~c000: waiting
