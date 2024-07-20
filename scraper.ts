@@ -1,4 +1,4 @@
-import { Database } from "bun:sqlite";
+import { Database, SQLiteError } from "bun:sqlite";
 import { parseArgs } from "node:util";
 import { shuffle } from "lodash";
 
@@ -37,7 +37,7 @@ function slugInsert(slug: Slug, value: string | null) {
   } catch (e) {
     // This means something else has inserted the slug between the check and now.
     // Just keep going.
-    if (e.code === "SQLITE_CONSTRAINT_UNIQUE") {
+    if (e instanceof SQLiteError && e.code === "SQLITE_CONSTRAINT_UNIQUE") {
       console.log(`${slug} is already present`);
       return 0;
     }
