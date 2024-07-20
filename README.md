@@ -22,7 +22,7 @@
 - 2000~5000: waiting
 - 5000~a000: A
 - a000~b000: A
-- b000~c000: waiting
+- b000~c000: A
 - c000~d000: waiting
 - d000~e000: B
 - e000~f000: waiting
