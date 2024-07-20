@@ -32,7 +32,17 @@ const slugInsertStmt = db.query(`
 INSERT INTO mapping (slug, value) VALUES (?, ?)
 `);
 function slugInsert(slug: Slug, value: string | null) {
-  return slugInsertStmt.run(slug, value);
+  try {
+    return slugInsertStmt.run(slug, value);
+  } catch (e) {
+    // This means something else has inserted the slug between the check and now.
+    // Just keep going.
+    if (e.code === "SQLITE_CONSTRAINT_UNIQUE") {
+      console.log(`${slug} is already present`)
+      return 0;
+    }
+    throw e;
+  }
 }
 
 const errorInsertStmt = db.query(`
