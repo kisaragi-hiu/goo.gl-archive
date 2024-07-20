@@ -18,6 +18,10 @@ mergeRemoteData: copyDbFromRemote
 	bun merge.ts data.sqlite remote-data.sqlite
 	rm remote-data.sqlite
 
+scrapeMentions:
+	bun scraper.ts --exportMentions
+	bun scraper.ts --slugArrayFile "mentioned-slugs.json"
+
 currentJobsA:
 	bunx concurrently \
 		--restart-tries 5 \

@@ -46,6 +46,30 @@ function errorInsert(slug: Slug, status: number, message: string) {
 }
 
 /* Reading DB */
+
+/**
+ * Write out mentions of goo.gl in values.
+ */
+function writeMentions() {
+  Bun.write(
+    "mentioned-slugs.json",
+    JSON.stringify(
+      db
+        .query(
+          "select distinct value from mapping where value LIKE '%//goo.gl/%'",
+        )
+        .all()
+        .map((obj) => (obj as { value: string }).value)
+        .map((s) => {
+          const m = s.match(/https?:\/\/goo\.gl\/((?=fb\/)?[a-zA-Z0-9]+)/);
+          if (m !== null) return m[1];
+        })
+        .filter((s) => typeof s !== "undefined")
+        .sort(),
+    ),
+  );
+}
+
 function writeCurrentSlugs() {
   Bun.write(
     "external-slugs.json",
@@ -195,12 +219,18 @@ const parsedArgs = parseArgs({
     prefix: { type: "string" },
     until: { type: "string" },
     export: { type: "boolean" },
+    exportMentions: { type: "boolean" },
   },
 });
 
 if (parsedArgs.values.export) {
   writeCurrentSlugs();
   console.log("Current slugs have been written to external-slugs.json");
+} else if (parsedArgs.values.exportMentions) {
+  writeMentions();
+  console.log(
+    "Slugs mentioned in the current values have been written to mentioned-slugs.json",
+  );
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
   await scrape(
     await Bun.file(parsedArgs.values.slugArrayFile).json(),
