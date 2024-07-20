@@ -20,6 +20,7 @@ mergeRemoteData: copyDbFromRemote
 
 currentJobsA:
 	bunx concurrently \
+		--restart-tries 5 \
 		"bun scraper.ts --init 1000 --until 2000" \
 		"sleep 0.1; bun scraper.ts --init 5000 --until a000" \
 		"sleep 0.2; bun scraper.ts --init a000 --until b000" \
@@ -30,7 +31,8 @@ currentJobsA:
 		"sleep 0.7; bun scraper.ts --prefix fb --init a000 --until b000"
 
 currentJobsB:
-	concurrently \
+	bunx concurrently \
+		--restart-tries 5 \
 		"bun scraper.ts --init d000 --until e000" \
 		"sleep 0.1; bun scraper.ts --init g000 --until h000" \
 		"sleep 0.2; bun scraper.ts --init R000 --until S000" \
