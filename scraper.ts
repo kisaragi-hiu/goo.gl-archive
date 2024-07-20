@@ -61,7 +61,7 @@ function writeMentions() {
         .all()
         .map((obj) => (obj as { value: string }).value)
         .map((s) => {
-          const m = s.match(/https?:\/\/goo\.gl\/((?=fb\/)?[a-zA-Z0-9]+)/);
+          const m = s.match(/https?:\/\/goo\.gl\/((?:fb\/)?[a-zA-Z0-9]+)/);
           if (m !== null) return m[1];
         })
         .filter((s) => typeof s !== "undefined")
