@@ -41,16 +41,15 @@ scrapeMentions:
 currentJobsA:
 	bunx concurrently \
 		--restart-tries 5 \
-		"bun scraper-bun.ts --init 1000 --until 2000" \
+		"bun scraper-bun.ts --init 3000 --until 4000" \
 		"bun scraper-bun.ts --init 5000 --until a000" \
 		"bun scraper-bun.ts --init a000 --until b000" \
-		"bun scraper-bun.ts --init b000 --until c000" \
-		"bun scraper-bun.ts --init D000 --until E000" \
-		"bun scraper-bun.ts --init E000 --until F000" \
-		"bun scraper-bun.ts --init F000 --until G000" \
-		"bun scraper-bun.ts --init M000 --until N000" \
-		"bun scraper-bun.ts --prefix fb --init a00 --until a000" \
-		"bun scraper-bun.ts --prefix fb --init a000 --until b000"
+		"bun scraper-bun.ts --init G000 --until H000" \
+		"bun scraper-bun.ts --init I000 --until J000" \
+		"bun scraper-bun.ts --init J000 --until K000" \
+		"bun scraper-bun.ts --init Y000 --until Z000" \
+		"bun scraper-bun.ts --prefix fb --init 1000 --until 2000" \
+		"bun scraper-bun.ts --prefix fb --init d000 --until e000"
 
 currentJobsB:
 	npx concurrently \
