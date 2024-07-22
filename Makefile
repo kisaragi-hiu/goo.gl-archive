@@ -43,29 +43,26 @@ currentJobsA:
 currentJobsB:
 	npx concurrently \
 		--restart-tries 5 \
-		"bun scraper.ts --init 2000 --until 3000" \
-		"bun scraper.ts --init 3000 --until 4000" \
+		"bun scraper.ts --init 2000 --until 4000" \
 		"bun scraper.ts --init 4000 --until 5000" \
-		"bun scraper.ts --init 7000 --until 8000" \
-		"bun scraper.ts --init 8000 --until 9000" \
-		"bun scraper.ts --init C000 --until D000" \
-		"bun scraper.ts --init G000 --until H000" \
-		"bun scraper.ts --init I000 --until J000" \
-		"bun scraper.ts --init J000 --until K000" \
-		"bun scraper.ts --init O000 --until P000" \
-		"bun scraper.ts --init P000 --until Q000" \
-		"bun scraper.ts --init Q000 --until R000" \
-		"bun scraper.ts --init S000 --until T000" \
-		"bun scraper.ts --init T000 --until U000" \
-		"bun scraper.ts --init Y000 --until Z000" \
-		"bun scraper.ts --init Z000 --until 00000" \
+		"bun scraper.ts --init 7000 --until 9000" \
+		"bun scraper.ts --init 9000 --until a000" \
 		"bun scraper.ts --init c000 --until d000" \
-		"bun scraper.ts --init z000 --until A000" \
-		"bun scraper.ts --prefix fb --init 2000 --until 3000" \
-		"bun scraper.ts --prefix fb --init C000 --until D000" \
-		"bun scraper.ts --prefix fb --init d000 --until e000" \
-		"bun scraper.ts --prefix fb --init l000 --until m000" \
-		"bun scraper.ts --prefix fb --init v000 --until w000"
+		"bun scraper.ts --init z000 --until B000" \
+		"bun scraper.ts --init B000 --until D000" \
+		"bun scraper.ts --init G000 --until H000" \
+		"bun scraper.ts --init I000 --until K000" \
+		"bun scraper.ts --init O000 --until Q000" \
+		"bun scraper.ts --init Q000 --until R000" \
+		"bun scraper.ts --init S000 --until U000" \
+		"bun scraper.ts --init U000 --until W000" \
+		"bun scraper.ts --init W000 --until Y000" \
+		"bun scraper.ts --init Y000 --until 00000" \
+		"bun scraper.ts --prefix fb --init 2000 --until 4000" \
+		"bun scraper.ts --prefix fb --init 4000 --until 6000" \
+		"bun scraper.ts --prefix fb --init e000 --until g000" \
+		"bun scraper.ts --prefix fb --init l000 --until n000" \
+		"bun scraper.ts --prefix fb --init v000 --until x000"
 
 currentJobsC:
 	npx concurrently \
