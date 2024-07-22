@@ -13,6 +13,9 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
 
+import type { Slug } from "./slugs.ts";
+import { slugs } from "./slugs.ts";
+
 const db = new Database("data.sqlite");
 db.exec(`
 PRAGMA busy_timeout=1000;
@@ -20,10 +23,6 @@ PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
 CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
 `);
-
-// A "slug" is the "abcde" in "goo.gl/abcde".
-
-type Slug = string;
 
 /* Writing */
 
@@ -44,6 +43,9 @@ function slugStored(slug: Slug) {
 const slugInsertStmt = db.prepare(`
 INSERT INTO mapping (slug, value) VALUES (?, ?)
 `);
+/**
+ * Insert an entry for `slug` and `value`.
+ */
 function slugInsert(slug: Slug, value: string | null) {
   try {
     return slugInsertStmt.run(slug, value);
@@ -109,63 +111,6 @@ const externalSlugs = new Set(await readExternalSlugs());
 
 function slugStoredExternally(slug: Slug) {
   return externalSlugs.has(slug);
-}
-
-/* Iterating */
-
-const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const charIndexMap = new Map([...chars].map((c, i) => [c, i]));
-/**
- * Return the next character after `char` in the valid character sequence.
- * The sequence is basically a-zA-Z0-9.
- * An error is thrown if `char` is not in the sequence.
- *
- * Returns undefined as the character after the last character. It is up to the
- * caller to handle that correctly, doing carry or wrapping around as appropriate.
- */
-function nextChar(char: string) {
-  const index = charIndexMap.get(char);
-  if (typeof index === "undefined") throw new Error("Invalid character");
-  return chars[index + 1];
-}
-
-/**
- * Return the slug that's one bigger than `slug`.
- * For example, the slug after "aaa" is "aab", and the one after "999" is "aaaa".
- */
-function nextSlug(slug: Slug) {
-  let carry = true;
-  const newChars = [];
-  for (let i = slug.length - 1; i >= 0; i--) {
-    if (carry) {
-      const next = nextChar(slug[i]);
-      if (typeof next === "string") {
-        newChars.push(next);
-        carry = false;
-      } else {
-        newChars.push(chars[0]);
-      }
-    } else {
-      newChars.push(slug[i]);
-    }
-  }
-  // If carry is still true, that means we've just reached eg. "999".
-  if (carry) newChars.push(chars[0]);
-  return newChars.reverse().join("");
-}
-
-/**
- * Return a sequence of slugs starting from `init`, until it reaches the maximum
- * value in 6 digits.
- * If `until` is given, also stop when reaching `until`.
- */
-function* slugs(init?: Slug, until?: Slug) {
-  let current = init || chars[0];
-  // FIXME: "larger than" `until` should also cause it to stop
-  while (current.length < 7 && current !== until) {
-    yield current;
-    current = nextSlug(current);
-  }
 }
 
 /**
