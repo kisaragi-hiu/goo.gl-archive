@@ -3,7 +3,7 @@ SSH_HOST := kisaragi@git.kisaragi-hiu.com
 
 backup:
 	make checkpoint
-	cp data.sqlite "data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
+	cp data.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
 
 export:
 	npx tsx scraper.ts --export
