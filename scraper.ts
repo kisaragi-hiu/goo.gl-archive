@@ -176,28 +176,28 @@ async function scrape(
       const location = result.headers.get("location");
       if (typeof location === "string") {
         // state: resolved to a URL
-        console.log(`${slug} -> ${location}`);
         slugInsert(slug, location);
+        console.log(`${slug} -> ${location}`);
       } else {
         // state: 301/302 but no location
       }
     } else if (result.status === 404) {
       // state: resolved to no mapping
-      console.log(`${slug} -> NULL`);
       slugInsert(slug, null);
+      console.log(`${slug} -> NULL`);
     } else if (result.status === 400) {
       // state: generic error? Disallowed (blocked) links use this, some
       // "invalid dynamic link" errors also use this.
-      console.log(`${slug} -> 400`);
       errorInsert(slug, result.status, result.statusText);
+      console.log(`${slug} -> 400`);
     } else if (result.status === 302) {
       // state: this is an internal page. Store the status, at least.
-      console.log(`${slug} -> ${result.status}`);
       errorInsert(slug, result.status, result.statusText);
+      console.log(`${slug} -> ${result.status}`);
     } else {
       // state: what the fuck?
-      console.log(`${slug} -> error (${result.status})`);
       errorInsert(slug, result.status, result.statusText);
+      console.log(`${slug} -> error (${result.status})`);
     }
   }
 }
