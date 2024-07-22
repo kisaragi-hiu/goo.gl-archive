@@ -28,14 +28,16 @@ type Slug = string;
 /* Writing */
 
 const slugStoredStmt = db.prepare("SELECT slug FROM mapping WHERE slug = ?");
-const slugError400Stmt = db.prepare(
-  "SELECT slug FROM errors WHERE status = 400 AND slug = ?",
+const slugErrorStatusStmt = db.prepare(
+  "SELECT status FROM errors WHERE slug = ?",
 );
 function slugStored(slug: Slug) {
   return (
     slugStoredExternally(slug) ||
     !!slugStoredStmt.get(slug) ||
-    !!slugError400Stmt.get(slug)
+    [400, 500].includes(
+      (slugErrorStatusStmt.get(slug) as { status: number })?.status,
+    )
   );
 }
 
@@ -48,7 +50,7 @@ function slugInsert(slug: Slug, value: string | null) {
   } catch (e) {
     // This means something else has inserted the slug between the check and now.
     // Just keep going.
-    if (e instanceof SqliteError && e.code === "SQLITE_CONSTRAINT_UNIQUE") {
+    if ((e as any)?.code === "SQLITE_CONSTRAINT_UNIQUE") {
       console.log(`${slug} is already present`);
       return 0;
     }
