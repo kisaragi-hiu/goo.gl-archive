@@ -24,6 +24,23 @@ CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
 CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
 `);
 
+/**
+ * Split `arr` into a fixed number of sublists.
+ * (Naming is hard...)
+ */
+function chunkN<Elem>(arr: Elem[], sublists: number) {
+  const buckets: Elem[][] = [];
+  for (let i = 0; i < sublists; i++) {
+    buckets.push(new Array());
+  }
+  let j = 0;
+  for (const elem of arr) {
+    buckets[j].push(elem);
+    j = (j + 1) % sublists;
+  }
+  return buckets;
+}
+
 /* Writing */
 
 const slugStoredStmt = db.prepare("SELECT slug FROM mapping WHERE slug = ?");
@@ -130,7 +147,11 @@ function slugStoredExternally(slug: Slug) {
  *
  * If `until` is provided, stop at that point instead of continuing indefinitely.
  */
-async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
+async function scrape(
+  init?: Slug | Slug[],
+  prefix?: string,
+  until?: Slug,
+): Promise<void> {
   for (const it of Array.isArray(init) ? init : slugs(init, until)) {
     const slug = prefix ? `${prefix}/${it}` : it;
     if (slugStored(slug)) {
@@ -171,10 +192,21 @@ async function scrape(init?: Slug | Slug[], prefix?: string, until?: Slug) {
   }
 }
 
+function parseThreadsArg(raw: string | undefined) {
+  if (typeof raw === "undefined") return 8;
+  const int = parseInt(raw);
+  if (Number.isNaN(int) || int <= 0) {
+    console.log("Invalid threads argument, using 8");
+    return 8;
+  }
+  return int;
+}
+
 const parsedArgs = parseArgs({
   args: process.argv.slice(2),
   options: {
     init: { type: "string" },
+    threads: { type: "string" },
     slugArrayFile: { type: "string" },
     prefix: { type: "string" },
     until: { type: "string" },
@@ -182,6 +214,8 @@ const parsedArgs = parseArgs({
     exportMentions: { type: "boolean" },
   },
 });
+
+const threads = parseThreadsArg(parsedArgs.values.threads);
 
 if (parsedArgs.values.export) {
   writeFileSync("external-slugs.json", JSON.stringify(getCurrentSlugs()));
@@ -192,13 +226,15 @@ if (parsedArgs.values.export) {
     "Slugs mentioned in the current values have been written to mentioned-slugs.json",
   );
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
-  await scrape(
-    shuffle(
-      JSON.parse(
-        readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
-      ) as Slug[],
+  const allSlugs = shuffle(
+    JSON.parse(
+      readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
     ),
-    parsedArgs.values.prefix,
+  ) as Slug[];
+  await Promise.all(
+    chunkN(allSlugs, threads).map((arr) =>
+      scrape(arr, parsedArgs.values.prefix),
+    ),
   );
 } else {
   await scrape(
