@@ -1,10 +1,21 @@
-import Database, { SqliteError } from "better-sqlite3";
+import type { Database as BunDatabase } from "bun:sqlite";
+// Pretend that the better-sqlite3 database constructor object is like Bun's
+// Database object. We can take care to check that it works on Node ourselves.
+//
+// The alternative is basically to use
+// https://github.com/farjs/better-sqlite3-wrapper/ or write an equivalent to
+// it.
+const Database = (process.isBun
+  ? (await import("bun:sqlite")).Database
+  : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
+
 import { readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
 
-const db = new Database("data.sqlite", { timeout: 1000 });
+const db = new Database("data.sqlite");
 db.exec(`
+PRAGMA busy_timeout=1000;
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
 CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
