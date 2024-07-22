@@ -114,6 +114,16 @@ function getMentions(): string[] {
     .filter((slug) => !slugStored(slug));
 }
 
+function writeMentions(options: { showCount?: boolean } = {}) {
+  const mentions = getMentions();
+  writeFileSync("mentioned-slugs.json", JSON.stringify(mentions));
+  console.log(
+    "Slugs mentioned in the current values have been written to mentioned-slugs.json",
+  );
+  if (options.showCount)
+    console.log(`There are ${mentions.length} mentioned slugs`);
+}
+
 async function readExternalSlugs(): Promise<Slug[]> {
   try {
     return JSON.parse(
@@ -211,29 +221,40 @@ const parsedArgs = parseArgs({
     prefix: { type: "string" },
     until: { type: "string" },
     export: { type: "boolean" },
+    mentionsExport: { type: "boolean" },
+    mentionsScrape: { type: "boolean" },
+    mentionsCount: { type: "boolean" },
     exportMentions: { type: "boolean" },
   },
 });
 
 const threads = parseThreadsArg(parsedArgs.values.threads);
 
+/**
+ * Scrape everything in `slugs` in multiple concurrent "threads".
+ */
+function scrapeArrayConcurrent(slugs: Slug[]) {
+  return Promise.all(
+    chunkN(shuffle(slugs), threads).map((arr) =>
+      scrape(arr, parsedArgs.values.prefix),
+    ),
+  );
+}
+
 if (parsedArgs.values.export) {
   writeFileSync("external-slugs.json", JSON.stringify(getCurrentSlugs()));
   console.log("Current slugs have been written to external-slugs.json");
-} else if (parsedArgs.values.exportMentions) {
-  writeFileSync("mentioned-slugs.json", JSON.stringify(getMentions()));
-  console.log(
-    "Slugs mentioned in the current values have been written to mentioned-slugs.json",
-  );
+} else if (parsedArgs.values.mentionsExport) {
+  writeMentions();
+} else if (parsedArgs.values.mentionsCount) {
+  writeMentions({ showCount: true });
+} else if (parsedArgs.values.mentionsScrape) {
+  writeMentions({ showCount: true });
+  scrapeArrayConcurrent(getMentions());
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
-  const allSlugs = shuffle(
+  scrapeArrayConcurrent(
     JSON.parse(
       readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
-    ),
-  ) as Slug[];
-  await Promise.all(
-    chunkN(allSlugs, threads).map((arr) =>
-      scrape(arr, parsedArgs.values.prefix),
     ),
   );
 } else {

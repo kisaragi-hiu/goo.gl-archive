@@ -26,8 +26,7 @@ mergeRemoteData: copyDbFromRemote
 	rm remote-data.sqlite
 
 scrapeMentions:
-	npx tsx scraper.ts --exportMentions
-	npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'
+	npx tsx scraper.ts --mentionsScrape
 
 currentJobsA:
 	bunx concurrently \
