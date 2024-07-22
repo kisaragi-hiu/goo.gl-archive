@@ -27,16 +27,7 @@ mergeRemoteData: copyDbFromRemote
 
 scrapeMentions:
 	npx tsx scraper.ts --exportMentions
-	npx concurrently \
-		--restart-tries 5 \
-		"npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.1; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.2; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.3; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.4; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.5; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.6; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'" \
-		"sleep 0.7; npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'"
+	npx tsx scraper.ts --slugArrayFile 'mentioned-slugs.json'
 
 currentJobsA:
 	bunx concurrently \
