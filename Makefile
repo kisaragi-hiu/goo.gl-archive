@@ -55,18 +55,20 @@ currentJobsB:
 	npx concurrently \
 		--restart-tries 5 \
 		"bun scraper-bun.ts --init 2000 --until 3000" \
-		"bun scraper-bun.ts --init k000 --until l000" \
-		"bun scraper-bun.ts --init p000 --until q000" \
-		"bun scraper-bun.ts --init K000 --until L000" \
-		"bun scraper-bun.ts --init L000 --until M000" \
-		"bun scraper-bun.ts --init N000 --until R000" \
+		"bun scraper-bun.ts --init 4000 --until 5000" \
+		"bun scraper-bun.ts --init C000 --until D000" \
+		"bun scraper-bun.ts --init O000 --until P000" \
+		"bun scraper-bun.ts --init P000 --until Q000" \
+		"bun scraper-bun.ts --init Q000 --until R000" \
+		"bun scraper-bun.ts --init S000 --until T000" \
+		"bun scraper-bun.ts --init T000 --until U000" \
 		"bun scraper-bun.ts --init Z000 --until ZZZZ" \
+		"bun scraper-bun.ts --init c000 --until d000" \
+		"bun scraper-bun.ts --init z000 --until A000" \
 		"bun scraper-bun.ts --prefix fb --init C000 --until D000" \
-		"bun scraper-bun.ts --prefix fb --init b000 --until c000" \
-		"bun scraper-bun.ts --prefix fb --init c000 --until d000" \
-		"bun scraper-bun.ts --prefix fb --init d000 --until e000" \
-		"bun scraper-bun.ts --prefix fb --init g000 --until h000" \
-		"bun scraper-bun.ts --prefix fb --init o000 --until p000"
+		"bun scraper-bun.ts --prefix fb --init 2000 --until 3000" \
+		"bun scraper-bun.ts --prefix fb --init v000 --until w000" \
+		"bun scraper-bun.ts --prefix fb --init l000 --until m000"
 
 currentJobsC:
 	npx concurrently \
