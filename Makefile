@@ -37,8 +37,8 @@ currentJobsA:
 		"bun scraper.ts --init 30000 --until 40000" \
 		"bun scraper.ts --init 40000 --until 50000" \
 		"bun scraper.ts --init 50000 --until 60000" \
-		"bun scraper.ts --init 60000 --until 70000" \
-		"bun scraper.ts --init 70000 --until 80000"
+		# "bun scraper.ts --init 60000 --until 70000" \
+		# "bun scraper.ts --init 70000 --until 80000"
 
 currentJobsB:
 	npx concurrently \
