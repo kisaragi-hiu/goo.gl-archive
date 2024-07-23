@@ -220,16 +220,18 @@ function parseThreadsArg(raw: string | undefined) {
 const parsedArgs = parseArgs({
   args: process.argv.slice(2),
   options: {
-    init: { type: "string" },
     threads: { type: "string" },
-    slugArrayFile: { type: "string" },
+
     prefix: { type: "string" },
+    init: { type: "string" },
     until: { type: "string" },
+
     export: { type: "boolean" },
+    exportMentions: { type: "boolean" },
+    slugArrayFile: { type: "string" },
     mentionsExport: { type: "boolean" },
     mentionsScrape: { type: "boolean" },
     mentionsCount: { type: "boolean" },
-    exportMentions: { type: "boolean" },
   },
 });
 
