@@ -48,11 +48,11 @@ currentJobsB:
 		"bun scraper.ts --init c000 --until f000" \
 		"bun scraper.ts --init z000 --until B000" \
 		"bun scraper.ts --init B000 --until D000" \
-		"bun scraper.ts --init G000 --until K000" \
+		"bun scraper.ts --init x000 --until z000" \
 		"bun scraper.ts --init O000 --until R000" \
 		"bun scraper.ts --init S000 --until W000" \
 		"bun scraper.ts --init W000 --until Y000" \
-		"bun scraper.ts --init Y000 --until 00000" \
+		"bun scraper.ts --init v000 --until x000" \
 		"bun scraper.ts --prefix fb --init 2000 --until 6000" \
 		"bun scraper.ts --prefix fb --init e000 --until i000" \
 		"bun scraper.ts --prefix fb --init v000 --until x000"
@@ -62,8 +62,4 @@ currentJobsC:
 		--restart-tries 5 \
 		"npx tsx scraper.ts --init q000 --until r000" \
 		"npx tsx scraper.ts --init r000 --until s000" \
-		"npx tsx scraper.ts --init v000 --until w000" \
-		"npx tsx scraper.ts --init w000 --until x000" \
-		"npx tsx scraper.ts --init x000 --until y000" \
-		"npx tsx scraper.ts --init y000 --until z000" \
 		"npx tsx scraper.ts --init T000 --until U000"
