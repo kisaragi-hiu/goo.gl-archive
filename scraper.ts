@@ -10,7 +10,7 @@ const Database = (process.isBun
   : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
 
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
-import { parseArgs, type ParseArgsConfig } from "node:util";
+import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
 import truncate from "lodash/truncate";
 
@@ -217,42 +217,24 @@ function parseThreadsArg(raw: string | undefined) {
   return int;
 }
 
-// An unnecessary exercise in manipulating TypeScript.
-
-// Grab the unexported type for each value in "options"
-type ParseArgsOptionConfig = NonNullable<ParseArgsConfig["options"]>[string];
-// An "options" value with a doc key
-interface ParseArgsOptionConfigWithDoc extends ParseArgsOptionConfig {
-  /** Extension: mark that this has been documented in the help message */
-  doc?: boolean | undefined;
-}
-// The "options" object but where each value also accepts the doc key
-interface ParseArgsOptionsConfigWithDoc {
-  [longOption: string]: ParseArgsOptionConfigWithDoc;
-}
-// The whole config except the "options" object accepts the doc key
-interface ParseArgsConfigWithDoc extends ParseArgsConfig {
-  options?: ParseArgsOptionsConfigWithDoc | undefined;
-}
-const argsConfig = {
+const parsedArgs = parseArgs({
   args: process.argv.slice(2),
   options: {
-    threads: { type: "string", doc: true },
+    threads: { type: "string" },
 
-    prefix: { type: "string", doc: true },
+    prefix: { type: "string" },
     init: { type: "string" },
     until: { type: "string" },
 
-    export: { type: "boolean", doc: true },
-    slugArrayFile: { type: "string", doc: true },
+    export: { type: "boolean" },
+    slugArrayFile: { type: "string" },
     rudimentaryProgress: { type: "string" },
-    help: { type: "boolean", short: "h", doc: true },
-    mentionsExport: { type: "boolean", doc: true },
-    mentionsScrape: { type: "boolean", doc: true },
-    mentionsCount: { type: "boolean", doc: true },
+    help: { type: "boolean", short: "h" },
+    mentionsExport: { type: "boolean" },
+    mentionsScrape: { type: "boolean" },
+    mentionsCount: { type: "boolean" },
   },
-} satisfies ParseArgsConfigWithDoc;
-const parsedArgs = parseArgs(argsConfig);
+});
 
 const threads = parseThreadsArg(parsedArgs.values.threads);
 
