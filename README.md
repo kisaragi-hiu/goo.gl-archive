@@ -17,16 +17,14 @@
 ## Progress
 
 - 0~2000: done
-- 2000~5000: B
+- 2000~5000: done
 - 5000~7000: done
 - 7000~a000: B
 - a000~c000: done
 - c000~f000: B
 - f000~g000: pending
 - g000~h000: done
-- h000~i000: pending
-- i000~j000: pending
-- j000~k000: pending
+- h000~k000: B
 - k000~l000: done
 - l000~m000: pending
 - m000~n000: pending

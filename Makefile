@@ -43,7 +43,7 @@ currentJobsA:
 currentJobsB:
 	npx concurrently \
 		--restart-tries 5 \
-		"bun scraper.ts --init 2000 --until 5000" \
+		"bun scraper.ts --init h000 --until k000" \
 		"bun scraper.ts --init 7000 --until a000" \
 		"bun scraper.ts --init c000 --until f000" \
 		"bun scraper.ts --init z000 --until B000" \
