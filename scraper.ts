@@ -232,6 +232,8 @@ const parsedArgs = parseArgs({
     mentionsExport: { type: "boolean" },
     mentionsScrape: { type: "boolean" },
     mentionsCount: { type: "boolean" },
+
+    rudimentaryProgress: { type: "string" },
   },
 });
 
@@ -253,7 +255,19 @@ async function scrapeArrayConcurrent(slugs: Slug[]) {
   writeDoneInfo();
 }
 
-if (parsedArgs.values.export) {
+if (typeof parsedArgs.values.rudimentaryProgress === "string") {
+  const glob = parsedArgs.values.rudimentaryProgress;
+  const stmt = db.prepare(
+    "SELECT slug FROM mapping WHERE slug GLOB ? ORDER BY slug DESC LIMIT 1;",
+  );
+  const largest = (stmt.get(glob) as { slug: Slug } | null)?.slug;
+  if (typeof largest === "string") {
+    console.log(`Largest slug matching '${glob}' is ${largest}
+("Largest" is decided by SQLite's descending ORDER BY)`);
+  } else {
+    console.log(`No slug matches ${glob}`);
+  }
+} else if (parsedArgs.values.export) {
   writeFileSync("external-slugs.json", JSON.stringify(getCurrentSlugs()));
   console.log("Current slugs have been written to external-slugs.json");
 } else if (parsedArgs.values.mentionsExport) {
