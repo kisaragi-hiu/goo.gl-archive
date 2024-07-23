@@ -169,7 +169,11 @@ async function scrape(
       // console.log(`"${slug}" already stored`);
       continue;
     }
-    const result = await fetch(`https://goo.gl/${slug}`, {
+    // From 2024-08-23, some requests will start being served an "interstitial page".
+    // The "si=1" query param is offered to suppress this behavior.
+    //
+    // The deadline for the whole ordeal is 2025-08-25.
+    const result = await fetch(`https://goo.gl/${slug}?si=1`, {
       method: "head",
       redirect: "manual",
     });
