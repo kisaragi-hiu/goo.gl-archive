@@ -12,6 +12,7 @@ const Database = (process.isBun
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
+import truncate from "lodash/truncate";
 
 import type { Slug } from "./slugs.ts";
 import { slugs } from "./slugs.ts";
@@ -177,7 +178,7 @@ async function scrape(
       if (typeof location === "string") {
         // state: resolved to a URL
         slugInsert(slug, location);
-        console.log(`${slug} -> ${location}`);
+        console.log(`${slug} -> ${truncate(location, { length: 100 })}`);
       } else {
         // state: 301/302 but no location
       }
