@@ -227,7 +227,6 @@ const parsedArgs = parseArgs({
     until: { type: "string" },
 
     export: { type: "boolean" },
-    exportMentions: { type: "boolean" },
     slugArrayFile: { type: "string" },
     mentionsExport: { type: "boolean" },
     mentionsScrape: { type: "boolean" },
