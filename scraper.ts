@@ -10,7 +10,7 @@ const Database = (process.isBun
   : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
 
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
-import { parseArgs } from "node:util";
+import { parseArgs, type ParseArgsConfig } from "node:util";
 import shuffle from "lodash/shuffle";
 import truncate from "lodash/truncate";
 
@@ -217,24 +217,42 @@ function parseThreadsArg(raw: string | undefined) {
   return int;
 }
 
-const parsedArgs = parseArgs({
+// An unnecessary exercise in manipulating TypeScript.
+
+// Grab the unexported type for each value in "options"
+type ParseArgsOptionConfig = NonNullable<ParseArgsConfig["options"]>[string];
+// An "options" value with a doc key
+interface ParseArgsOptionConfigWithDoc extends ParseArgsOptionConfig {
+  /** Extension: mark that this has been documented in the help message */
+  doc?: boolean | undefined;
+}
+// The "options" object but where each value also accepts the doc key
+interface ParseArgsOptionsConfigWithDoc {
+  [longOption: string]: ParseArgsOptionConfigWithDoc;
+}
+// The whole config except the "options" object accepts the doc key
+interface ParseArgsConfigWithDoc extends ParseArgsConfig {
+  options?: ParseArgsOptionsConfigWithDoc | undefined;
+}
+const argsConfig = {
   args: process.argv.slice(2),
   options: {
-    threads: { type: "string" },
+    threads: { type: "string", doc: true },
 
-    prefix: { type: "string" },
+    prefix: { type: "string", doc: true },
     init: { type: "string" },
     until: { type: "string" },
 
-    export: { type: "boolean" },
-    slugArrayFile: { type: "string" },
-    mentionsExport: { type: "boolean" },
-    mentionsScrape: { type: "boolean" },
-    mentionsCount: { type: "boolean" },
-
+    export: { type: "boolean", doc: true },
+    slugArrayFile: { type: "string", doc: true },
     rudimentaryProgress: { type: "string" },
+    help: { type: "boolean", short: "h", doc: true },
+    mentionsExport: { type: "boolean", doc: true },
+    mentionsScrape: { type: "boolean", doc: true },
+    mentionsCount: { type: "boolean", doc: true },
   },
-});
+} satisfies ParseArgsConfigWithDoc;
+const parsedArgs = parseArgs(argsConfig);
 
 const threads = parseThreadsArg(parsedArgs.values.threads);
 
@@ -254,7 +272,58 @@ async function scrapeArrayConcurrent(slugs: Slug[]) {
   writeDoneInfo();
 }
 
-if (typeof parsedArgs.values.rudimentaryProgress === "string") {
+if (parsedArgs.values.help) {
+  console.log(
+    `goo.gl scraper
+
+I refer to each short URL (like "abcd") as a "slug".
+
+The default "command" is to brute force through every 1~6 char combination of
+0-9A-Za-z, starting with "0" and ending with "zzzzzz".
+
+Options:
+--prefix <string>: add a prefix before the sequential slug.
+  Using "--prefix foo" would brute force foo/0, foo/1, ..., foo/zzzzzz.
+--init <slug>: start from this slug instead of "0".
+--until <slug>: end the command after this slug instead of "zzzzzz".
+  When using --init and --until together to control the "block" an invocation is
+  responsible, this can effectively allow somewhat manually coordinating
+  multiple jobs to run on different blocks of the possible space at the same time.
+
+Commands:
+--rudimentaryProgress <glob>: Return the largest slug matching \`glob\`.
+  "Largest" is just based on SQLite's sorting. Notably, this sorts a000 above
+  a0000, so it's only really useful with globs like "a????" where the character
+  count is fixed.
+  For blocks that have only ever been scraped sequentially, this provides a
+  useful view on the progress.
+
+Other commands:
+--help, -h: Show this message.
+--export: Write all slugs into ./external-slugs.json as one big array of strings.
+  Useful for synchronizing slugs that are already stored without having to
+  synchronize the entire database. Doesn't really scale that well past a few
+  million entries.
+
+--slugArrayFile <file>: Scrape slugs in \`file\` instead of sequentially.
+  Sequential scraping is described below.
+  \`file\` should be a JSON file containing an array of strings; each string
+  should be a slug, like "abcd" or "fb/1234".
+--threads <n>: Try this many concurrent fetches when applicable.
+  Currently this is just for --mentionsScrape and --slugArrayFile.
+
+--mentionsExport: Write mentioned slugs into ./mentioned-slugs.json.
+  Some goo.gl links resolve into another goo.gl link. Others mention a goo.gl
+  link within the resolved URL. This command and the next ones are for dealing
+  with them.
+--mentionsCount: Do mentionsExport, then print the number of mentions.
+--mentionsScrape: Do mentionsExport, then scrape every mentioned slug.
+  There are some links that are more than one level deep. This can be run in a
+  loop in order to go through them.
+
+`.trim(),
+  );
+} else if (typeof parsedArgs.values.rudimentaryProgress === "string") {
   const glob = parsedArgs.values.rudimentaryProgress;
   const stmt = db.prepare(
     "SELECT slug FROM mapping WHERE slug GLOB ? ORDER BY slug DESC LIMIT 1;",
