@@ -9,7 +9,7 @@ const Database = (process.isBun
   ? (await import("bun:sqlite")).Database
   : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
 
@@ -230,15 +230,20 @@ const parsedArgs = parseArgs({
 
 const threads = parseThreadsArg(parsedArgs.values.threads);
 
+function writeDoneInfo() {
+  appendFileSync("done.jsonl", JSON.stringify(process.argv.slice(2)) + "\n");
+}
+
 /**
  * Scrape everything in `slugs` in multiple concurrent "threads".
  */
-function scrapeArrayConcurrent(slugs: Slug[]) {
-  return Promise.all(
+async function scrapeArrayConcurrent(slugs: Slug[]) {
+  await Promise.all(
     chunkN(shuffle(slugs), threads).map((arr) =>
       scrape(arr, parsedArgs.values.prefix),
     ),
   );
+  writeDoneInfo();
 }
 
 if (parsedArgs.values.export) {
@@ -263,4 +268,5 @@ if (parsedArgs.values.export) {
     parsedArgs.values.prefix,
     parsedArgs.values.until,
   );
+  writeDoneInfo();
 }
