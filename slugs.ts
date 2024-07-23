@@ -4,7 +4,7 @@ export type Slug = string;
 
 /* Iterating */
 
-const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const charIndexMap = new Map([...chars].map((c, i) => [c, i]));
 /**
  * Return the next character after `char` in the valid character sequence.
