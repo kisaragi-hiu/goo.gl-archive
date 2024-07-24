@@ -19,7 +19,7 @@
 - 0~0000: done
 - 0000~S000: done
 - S000~W000: B
-- W000~Y000: B
+- W000~Y000: done
 - Y000~a000: done
 - a000~f000: done
 - f000~g000: B
@@ -28,8 +28,7 @@
 - k000~l000: done
 - l000~p000: B
 - p000~q000: done
-- q000~r000: pending
-- r000~s000: pending
+- q000~s000: B
 - s000~v000: B
 - v000~x000: B
 - x000~z000: B
