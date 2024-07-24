@@ -55,10 +55,3 @@ currentJobsB:
 		"bun scraper.ts --prefix fb --init 2000 --until 6000" \
 		"bun scraper.ts --prefix fb --init e000 --until i000" \
 		"bun scraper.ts --prefix fb --init x000 --until z000"
-
-currentJobsC:
-	npx concurrently \
-		--restart-tries 5 \
-		"npx tsx scraper.ts --init q000 --until r000" \
-		"npx tsx scraper.ts --init r000 --until s000" \
-		"npx tsx scraper.ts --init T000 --until U000"

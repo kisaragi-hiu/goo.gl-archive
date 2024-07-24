@@ -28,8 +28,8 @@
 - k000~l000: done
 - l000~p000: B
 - p000~q000: done
-- q000~r000: C
-- r000~s000: C
+- q000~r000: pending
+- r000~s000: pending
 - s000~v000: B
 - v000~x000: B
 - x000~z000: B
