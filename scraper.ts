@@ -209,6 +209,7 @@ const parsedArgs = parseArgs({
     prefix: { type: "string" },
     init: { type: "string" },
     until: { type: "string" },
+    scrapeJobFile: { type: "string" },
 
     slugArrayFile: { type: "string" },
     rudimentaryProgress: { type: "string" },
@@ -254,6 +255,12 @@ Options:
   When using --init and --until together to control the "block" an invocation is
   responsible, this can effectively allow somewhat manually coordinating
   multiple jobs to run on different blocks of the possible space at the same time.
+
+--scrapeJobFile <file>: Scrape jobs defined in \`file\`.
+  The file should contain JSON for an array of objects. Each object can specify
+  "init", "until", and "prefix", which have the same meanings as the options
+  above. For example, [{"init": "0","until":"00"}] is the same as passing
+  "--init 0 --until 00" on the command line.
 
 Commands:
 --rudimentaryProgress <glob>: Return the largest slug matching \`glob\`.
@@ -308,6 +315,17 @@ Other commands:
     JSON.parse(
       readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
     ),
+  );
+} else if (typeof parsedArgs.values.scrapeJobFile === "string") {
+  const jobs = JSON.parse(
+    readFileSync(parsedArgs.values.scrapeJobFile, { encoding: "utf-8" }),
+  ) as Array<{ init: Slug; until: Slug; prefix?: string | undefined }>;
+  await Promise.all(
+    jobs.map((job) => {
+      scrape(job.init, job.prefix, job.until).then(() => {
+        appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
+      });
+    }),
   );
 } else {
   await scrape(
