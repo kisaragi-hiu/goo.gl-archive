@@ -137,9 +137,8 @@
 - fb/s000~t000: pending
 - fb/t000~u000: pending
 - fb/u000~v000: pending
-- fb/v000~x000: B
-- fb/x000~y000: pending
-- fb/y000~z000: pending
+- fb/v000~x000: done
+- fb/x000~z000: B
 - fb/z000~00000: pending
 - fb/00000~zzzzzz: pending
 
