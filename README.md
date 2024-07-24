@@ -16,36 +16,21 @@
 
 ## Progress
 
-- 0~2000: done
-- 2000~5000: done
-- 5000~7000: done
-- 7000~A000: B
-- A000~B000: B
-- B000~D000: B
-- D000~G000: done
-- G000~K000: done
-- K000~O000: done
-- O000~R000: B
-- R000~S000: done
+- 0~0000: done
+- 0000~S000: done
 - S000~W000: B
 - W000~Y000: B
 - Y000~a000: done
-- a000~c000: done
-- c000~f000: done
+- a000~f000: done
 - f000~g000: B
 - g000~h000: done
 - h000~k000: B
 - k000~l000: done
-- l000~m000: pending
-- m000~n000: pending
-- n000~o000: pending
-- o000~p000: pending
+- l000~p000: B
 - p000~q000: done
 - q000~r000: C
 - r000~s000: C
-- s000~t000: pending
-- t000~u000: pending
-- u000~v000: pending
+- s000~v000: B
 - v000~x000: B
 - x000~z000: B
 - z000~00000: done
