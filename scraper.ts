@@ -322,6 +322,7 @@ Other commands:
   ) as Array<{ init: Slug; until: Slug; prefix?: string | undefined }>;
   await Promise.all(
     jobs.map((job) => {
+      console.log(`Starting job: ${JSON.stringify(job)}`);
       scrape(job.init, job.prefix, job.until).then(() => {
         appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
       });
