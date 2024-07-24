@@ -31,8 +31,8 @@
 - W000~Y000: B
 - Y000~a000: done
 - a000~c000: done
-- c000~f000: B
-- f000~g000: pending
+- c000~f000: done
+- f000~g000: B
 - g000~h000: done
 - h000~k000: B
 - k000~l000: done

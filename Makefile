@@ -49,7 +49,7 @@ currentJobsB:
 		"bun scraper.ts --init O000 --until R000" \
 		"bun scraper.ts --init S000 --until W000" \
 		"bun scraper.ts --init W000 --until Y000" \
-		"bun scraper.ts --init c000 --until f000" \
+		"bun scraper.ts --init f000 --until g000" \
 		"bun scraper.ts --init h000 --until k000" \
 		"bun scraper.ts --init v000 --until x000" \
 		"bun scraper.ts --init x000 --until z000" \
