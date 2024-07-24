@@ -5,12 +5,6 @@ backup:
 	make checkpoint
 	cp data.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
 
-export:
-	npx tsx scraper.ts --export
-
-exportToRemote: export
-	scp external-slugs.json "$(SSH_HOST):/home/kisaragi/goo.gl-archive/external-slugs.json"
-
 checkpoint:
 	sqlite3 data.sqlite "pragma wal_checkpoint;"
 

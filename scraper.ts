@@ -50,7 +50,6 @@ const slugErrorStatusStmt = db.prepare(
 );
 function slugStored(slug: Slug) {
   return (
-    slugStoredExternally(slug) ||
     !!slugStoredStmt.get(slug) ||
     [400, 500].includes(
       (slugErrorStatusStmt.get(slug) as { status: number })?.status,
@@ -123,22 +122,6 @@ function writeMentions(options: { showCount?: boolean } = {}) {
   );
   if (options.showCount)
     console.log(`There are ${mentions.length} mentioned slugs`);
-}
-
-async function readExternalSlugs(): Promise<Slug[]> {
-  try {
-    return JSON.parse(
-      readFileSync("external-slugs.json", { encoding: "utf-8" }),
-    ) as Slug[];
-  } catch (_e) {
-    return [];
-  }
-}
-
-const externalSlugs = new Set(await readExternalSlugs());
-
-function slugStoredExternally(slug: Slug) {
-  return externalSlugs.has(slug);
 }
 
 /**
@@ -227,7 +210,6 @@ const parsedArgs = parseArgs({
     init: { type: "string" },
     until: { type: "string" },
 
-    export: { type: "boolean" },
     slugArrayFile: { type: "string" },
     rudimentaryProgress: { type: "string" },
     help: { type: "boolean", short: "h" },
@@ -283,10 +265,6 @@ Commands:
 
 Other commands:
 --help, -h: Show this message.
---export: Write all slugs into ./external-slugs.json as one big array of strings.
-  Useful for synchronizing slugs that are already stored without having to
-  synchronize the entire database. Doesn't really scale that well past a few
-  million entries.
 
 --slugArrayFile <file>: Scrape slugs in \`file\` instead of sequentially.
   Sequential scraping is described below.
@@ -318,9 +296,6 @@ Other commands:
   } else {
     console.log(`No slug matches ${glob}`);
   }
-} else if (parsedArgs.values.export) {
-  writeFileSync("external-slugs.json", JSON.stringify(getCurrentSlugs()));
-  console.log("Current slugs have been written to external-slugs.json");
 } else if (parsedArgs.values.mentionsExport) {
   writeMentions();
 } else if (parsedArgs.values.mentionsCount) {
