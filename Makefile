@@ -23,7 +23,8 @@ scrapeMentions:
 	npx tsx scraper.ts --mentionsScrape
 
 currentJobsA:
-	bun scraper.ts --scrapeJobFile jobs-A.json
+	bunx concurrently --restart-tries 5 \
+		bun scraper.ts --scrapeJobFile jobs-A.json
 
 currentJobsB:
 	bun scraper.ts --scrapeJobFile jobs-B.json
