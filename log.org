@@ -1,0 +1,88 @@
+#+title: Log
+
+* 2024-07-19
+
+Saw the shutdown news, thought I sort of know where to start so started trying
+
+Iterate through goo.gl links with a generator function; I call them “slugs” for now
+
+Slugs are a-zA-Z0-9, for apparently 1~6 digits. That seems like a very large space to brute force through, but I guess it's better than nothing. niconico still not being fully restored (and for people outside Japan, still inaccessible because DWANGO believes in region blocking as a security measure) made me feel more about losing information, I guess
+
+Store it with SQLite; use Bun for the builting SQLite driver
+
+Enable WAL so I can have multiple writers; set timeout so they wait a bit instead of returning busy
+
+Implement =--init= as a resume point so the scraper can be stopped and restarted
+
+Implement =--until= so that an invocation of the scraper could be more predictable. Init and until allow us to scrape in blocks.
+
+Implement =--prefix=, as there are other namespaces under goo.gl like goo.gl/fb (that's the main one that I care about)
+
+Add the external slugs mechanism. Write out the slugs without the value in a JSON file so it's possibly easier to synchronize between machines that are running the scraper.
+
+Allow passing in an array of slugs to store. Use this to store every goo.gl link I could find on lkml. This was done by downloading the =mbox.gz= for the search from lore.kernel.org, running
+
+#+begin_src sh
+grep -o --text 'https\?://[^ ]*goo.gl[^ ]*' results-goo.gl.mbox > instances
+#+end_src
+
+which yields about 600~800 instances after removing duplicates. Then I manually cleaned up some oddities that are the result of the imperfect grep or line wrapping on “=” breaking some URLs up.
+
+404 are stored as NULL entries, as that means the slug has no value.
+Other status codes are stored for further processing. 400 is used for blocked links and other purposes.
+
+Implement a mechanism for merging the SQLite databases.
+
+Start running the scraping process on my server and my desktop. Multiple processes are launched to scrape multiple blocks at once.
+
+* 2024-07-20
+
+Use concurrently to run each process instead of just using the =command &= shell syntax. This allows individual jobs to fail then get automatically restarted.
+
+Turns out some goo.gl links resolve to yet another goo.gl link. Some long URLs also refer to goo.gl as well. Implement a mechanism to extract such URLs that are mentioned in other stored URLs, and a command to scrape them.
+
+When scraping slugs from an array, randomize the order so that multiple jobs are less likely to be scraping the same slugs. This could've been avoided if I just ran the scrape function multiple times asynchronously in the same process.
+
+Try to reduce memory usage on A because A is very memory limited.
+
+Give B a lot more tasks as I realize the bottleneck at this moment was memory use, not network speed. A is in a data center while B relies on a 4G cellular network.
+
+* 2024-07-21
+
+Port the scraper script to Node (running through privatenumber/tsx) and better-sqlite3, as I thought it might provide lower memory usage. I also did this to make it possible to run the scraper on my Android phone, as Bun does not (yet) have an Android / Termux build.
+
+The Node version works, but it actually uses a bit more memory, and for A that really matters. A has only a gigabyte of memory. When trying to run it on my phone, it also keeps getting killed, presumably because it's using too much memory.
+
+I struggle a bit to get the same file to work for both Node and Bun while also keeping TypeScript happy. Something about bun:sqlite and better-sqlite3's prepare method's type means that TypeScript considers the two to be incompatible (even though I'm calling them in a way that works for both). I completely bail (also because my Emacs is crashing when completing with LSP for some reason), and just copy the implementation for Bun back into the main branch, duplicating the file. This lets the scraping continue while I figure out how to actually solve it.
+
+* 2024-07-22
+
+I make the second try to make the one file support both runtimes and both SQLite libraries. There is https://github.com/farjs/better-sqlite3-wrapper/, but I instead just use a type assertion to pretend the better-sqlite3 database constructor is an instance of Bun's Database object. This makes TypeScript not protect me against using the wrong methods, but I can still catch that by just running the code. It also allows TypeScript's completion to continue working.
+
+Use concurrency for slugArrayFile instead of relying on multiple processes. This avoids the duplicating the overhead of each instance of the scraper process. The only thing that meaningfully benefits from running in parallel is the network requests, and we still get that parallelism with promises.
+
+Overhaul the interface for scraping mentioned URLs, adding the extract-then-scrape action to the scraper itself and not duct taped through Make. Also made it show how many mentioned URLs that are about to be scraped. Fun fact: for some reason a significant portion of these more-than-one-level-deep links all resolve to the same hosts. For 4 digit slugs a ton of them end up resolving to a sketchy-sounding Facebook app; for 5 digit slugs a ton of them resolve to a bare IP starting with 50.
+
+* 2024-07-23
+
+When a job finishes, write the job description down. I make each fetch output the result to the terminal so that I can gauge how fast or slow things are going, but that means I wouldn't be able to see if a job has finished. Writing them down in a file makes this much simpler.
+
+* 2024-07-24
+
+Already append the query string to tell goo.gl to not return the “interstitial page”. Might as well do it now.
+
+Write a help text so I don't have to open the source code and navigate to the right place to see what commands I've made available.
+
+Make the slug ordering 0-9A-Za-z (uppercase then lowercase) so that it agrees with the string sorting elsewhere: in Emacs (for ordering tasks), in SQLite (for checking the progress of each “block” in a rudimentary way), etc.
+
+Give up doing anything on C, as the amount of data that would be scraped and stored would be annoying to transfer out of Termux's home directory.
+
+* 2024-07-25
+
+Save a few object references: instead of reusing obj.key multiple times, store it into a variable then reference the variable. Afaik this is one of those optimizations that's guaranteed to be beneficial, except the benefit is minuscule and usually not worth the hassle. This wouldn't be much relative to the total amount of compute, but since the total compute amount is /a hell lot/ in absolute terms this probably does add up.
+
+Remove the external slugs mechanism to try to reduce memory use. The mechanism does not scale well, since at a certain point there are so many slugs, trying to fit them all into memory is just no longer worth it. This apparently saves a bit of memory.
+
+Then implement a new way to specify jobs. Instead of launching multiple processes, each responsible for a block defined by the command, I implemented a way to specify multiple blocks in a JSON file. This way one process would be able to read multiple jobs. Just as for slugArrayFile, only network requests need to actually be parallel, and they always are, so invoking the async scrape function in JS for each “job” is much more efficient. This massively reduces memory use: about 100MB per process before and after, but before this change we needed one process per job, while after this change every job runs in this process.
+
+The bottleneck is now network speed and bandwidth, as well as disk space for the database.
