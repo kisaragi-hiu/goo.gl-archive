@@ -34,6 +34,5 @@
 
   { "prefix": "fb", "init": "9rBG", "until": "A000" },
   { "prefix": "fb", "init": "lsPK", "until": "o000" },
-  { "prefix": "fb", "init": "ssBV", "until": "t000" },
   { "prefix": "fb", "init": "zSHn", "until": "00000" }
 ]

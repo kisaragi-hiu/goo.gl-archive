@@ -101,11 +101,11 @@
 - fb/a000~i000: done
 - fb/i000~o000: A
 - fb/o000~p000: done
-- fb/p000~t000: A
+- fb/p000~t000: done
 - fb/t000~v000: B
 - fb/v000~x000: done
 - fb/x000~z000: B
-- fb/z000~00000: pending
+- fb/z000~00000: A
 - fb/00000~zzzzzz: pending
 
 ## Schema
