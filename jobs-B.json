@@ -11,6 +11,16 @@
   { "prefix": "fb", "init": "D000", "until": "K000" },
   { "prefix": "fb", "init": "K000", "until": "T000" },
   { "prefix": "fb", "init": "T000", "until": "a000" },
-  { "prefix": "fb", "init": "t000", "until": "v000" },
+
+  { "prefix": "fb", "init": "t000", "until": "tF00" },
+  { "prefix": "fb", "init": "tF00", "until": "tU00" },
+  { "prefix": "fb", "init": "tU00", "until": "tj00" },
+  { "prefix": "fb", "init": "tj00", "until": "u000" },
+
+  { "prefix": "fb", "init": "u000", "until": "uF00" },
+  { "prefix": "fb", "init": "uF00", "until": "uU00" },
+  { "prefix": "fb", "init": "uU00", "until": "uj00" },
+  { "prefix": "fb", "init": "uj00", "until": "v000" },
+
   { "prefix": "fb", "init": "x000", "until": "z000" }
 ]
