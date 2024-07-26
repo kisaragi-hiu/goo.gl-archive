@@ -26,5 +26,10 @@ currentJobsA:
 	bunx concurrently --restart-tries 5 \
 		"bun scraper.ts --scrapeJobFile jobs-A.json"
 
+restartA:
+	pkill -f -9 concurrently
+	pkill -f scraper.ts
+	nohup make currentJobsA >/dev/null &
+
 currentJobsB:
 	bun scraper.ts --scrapeJobFile jobs-B.json
