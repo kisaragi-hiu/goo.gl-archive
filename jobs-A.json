@@ -1,24 +1,26 @@
 [
-  { "init": "00000", "until": "0W000" },
-  { "init": "0W000", "until": "10000" },
-  { "init": "10000", "until": "1W000" },
-  { "init": "1W000", "until": "20000" },
-  { "init": "20000", "until": "2W000" },
-  { "init": "2W000", "until": "30000" },
-  { "init": "30000", "until": "3W000" },
-  { "init": "3W000", "until": "40000" },
-  { "init": "40000", "until": "4W000" },
-  { "init": "4W000", "until": "50000" },
-  { "init": "50000", "until": "5W000" },
-  { "init": "5W000", "until": "60000" },
-  { "init": "60000", "until": "6L000" },
-  { "init": "6L000", "until": "6j000" },
-  { "init": "6j000", "until": "70000" },
-  { "init": "70000", "until": "7L000" },
-  { "init": "7L000", "until": "7j000" },
-  { "init": "7j000", "until": "80000" },
-  { "prefix": "fb", "init": "6000", "until": "A000" },
-  { "prefix": "fb", "init": "i000", "until": "o000" },
-  { "prefix": "fb", "init": "p000", "until": "t000" },
-  { "prefix": "fb", "init": "z000", "until": "00000" }
+  { "init": "06ItV", "until": "0CjAc" },
+  { "init": "0CjAc", "until": "0J9Rj" },
+  { "init": "0J9Rj", "until": "0PZiq" },
+  { "init": "0PZiq", "until": "0W000" },
+
+  { "init": "0ZL3E", "until": "0g0Hv" },
+  { "init": "0g0Hv", "until": "0mfWc" },
+  { "init": "0mfWc", "until": "0tKlJ" },
+  { "init": "0tKlJ", "until": "10000" },
+
+  { "init": "16JUl", "until": "1CjcZ" },
+  { "init": "1CjcZ", "until": "1J9kN" },
+  { "init": "1J9kN", "until": "1PZsB" },
+  { "init": "1PZsB", "until": "1W000" },
+
+  { "init": "1ZLEi", "until": "1g0QX" },
+  { "init": "1g0QX", "until": "1mfcM" },
+  { "init": "1mfcM", "until": "1tKoB" },
+  { "init": "1tKoB", "until": "20000" },
+
+  { "prefix": "fb", "init": "9rBG", "until": "A000" },
+  { "prefix": "fb", "init": "lsPK", "until": "o000" },
+  { "prefix": "fb", "init": "ssBV", "until": "t000" },
+  { "prefix": "fb", "init": "zSHn", "until": "00000" }
 ]
