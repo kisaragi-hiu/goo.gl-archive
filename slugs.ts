@@ -61,3 +61,42 @@ export function* slugs(
     current = nextSlug(current);
   }
 }
+
+// Ground truth implementation, except this is O(length^62).
+// function slugToNumber(slug: Slug): number {
+//   let n = 0;
+//   for (const s of slugs()) {
+//     if (s === slug) break;
+//     if (s.length > slug.length) throw new Error(`${slug} is not a valid slug`);
+//     n++;
+//   }
+//   return n;
+// }
+
+function slugToNumber(slug: Slug): number {
+  const reversed = [...slug].reverse();
+  const len = slug.length;
+  const charCount = chars.length;
+  let sum = 0;
+  for (let i = 0; i < len; i++) {
+    const value = charIndexMap.get(reversed[i]);
+    if (typeof value === "undefined") {
+      throw new Error(`${slug} is not a valid slug`);
+    }
+    // "0" is 1, 1 + "z" is "00"
+    // If the first char has a value of 0 then "00" would be the same as "0".
+    sum += (value + 1) * charCount ** i;
+  }
+  return sum - 1; // correct it back so that "0" is still 0, however.
+}
+
+// Ground truth implementation, except this is O(n).
+function numberToSlug(n: number): Slug {
+  let i = 0;
+  for (const s of slugs()) {
+    if (i === n) return s;
+    if (i > n) break;
+    i++;
+  }
+  throw new Error(`${n} is not valid`);
+}
