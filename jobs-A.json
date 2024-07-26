@@ -18,7 +18,7 @@
   { "init": "7L000", "until": "7j000" },
   { "init": "7j000", "until": "80000" },
   { "prefix": "fb", "init": "6000", "until": "A000" },
-  { "prefix": "fb", "init": "A000", "until": "C000" },
   { "prefix": "fb", "init": "i000", "until": "o000" },
-  { "prefix": "fb", "init": "p000", "until": "t000" }
+  { "prefix": "fb", "init": "p000", "until": "t000" },
+  { "prefix": "fb", "init": "z000", "until": "00000" }
 ]
