@@ -15,7 +15,7 @@ import shuffle from "lodash/shuffle";
 import truncate from "lodash/truncate";
 
 import type { Slug } from "./slugs.ts";
-import { slugs, dividePortions } from "./slugs.ts";
+import { slugs } from "./slugs.ts";
 
 const db = new Database("data.sqlite");
 db.exec(`
@@ -145,6 +145,8 @@ async function scrape(
   init?: Slug | Slug[],
   prefix?: string,
   until?: Slug,
+  /** Scrape just one slug, then return. */
+  justOne?: boolean,
 ): Promise<void> {
   for (const it of Array.isArray(init) ? init : slugs(init, until)) {
     const slug = prefix ? `${prefix}/${it}` : it;
@@ -188,6 +190,7 @@ async function scrape(
       errorInsert(slug, status, result.statusText);
       console.log(`${slug} -> error (${status})`);
     }
+    if (justOne) break;
   }
 }
 
@@ -209,6 +212,7 @@ const parsedArgs = parseArgs({
     prefix: { type: "string" },
     init: { type: "string" },
     until: { type: "string" },
+    justOne: { type: "boolean" },
     scrapeJobFile: { type: "string" },
 
     slugArrayFile: { type: "string" },
@@ -253,6 +257,10 @@ Options:
   When using --init and --until together to control the "block" an invocation is
   responsible, this can effectively allow somewhat manually coordinating
   multiple jobs to run on different blocks of the possible space at the same time.
+
+--justOne <slug>: Scrape just the next unscraped slug in the defined range.
+  This allows seeing the "edge" of a block.
+  Also applies for --scrapeJobFile.
 
 --scrapeJobFile <file>: Scrape jobs defined in \`file\`.
   The file should contain JSON for an array of objects. Each object can specify
@@ -318,11 +326,14 @@ Other commands:
   const jobs = JSON.parse(
     readFileSync(parsedArgs.values.scrapeJobFile, { encoding: "utf-8" }),
   ) as Array<{ init: Slug; until: Slug; prefix?: string | undefined }>;
+  const justOne = parsedArgs.values.justOne;
   await Promise.all(
     jobs.map((job) => {
       console.log(`Starting job: ${JSON.stringify(job)}`);
-      scrape(job.init, job.prefix, job.until).then(() => {
-        appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
+      scrape(job.init, job.prefix, job.until, justOne).then(() => {
+        if (!justOne) {
+          appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
+        }
       });
     }),
   );
@@ -330,6 +341,7 @@ Other commands:
   const init = parsedArgs.values.init;
   const until = parsedArgs.values.until;
   const prefix = parsedArgs.values.prefix;
+  const justOne = parsedArgs.values.justOne;
   // const threads = parseThreadsArg(parsedArgs.values.threads, 1);
   // const jobs: { init?: Slug; until?: Slug; prefix?: string }[] = [];
   // if (typeof init === "string" && typeof until === "string") {
@@ -351,6 +363,8 @@ Other commands:
   //     });
   //   }),
   // );
-  await scrape(init, prefix, until);
-  writeDoneInfo();
+  await scrape(init, prefix, until, justOne);
+  if (!justOne) {
+    writeDoneInfo();
+  }
 }
