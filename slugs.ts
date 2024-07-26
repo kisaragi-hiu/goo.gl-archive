@@ -129,7 +129,9 @@ export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
   const portionSize = Math.floor(Math.abs(an - bn) / n);
   const portions: [Slug, Slug][] = [];
   let current = an;
-  while (current + portionSize < bn) {
+  // The * 2 is to prevent something like [[0, 4], [4, 8], [8, 9]]
+  // I want the last part to be larger than the portionSize
+  while (current + portionSize * 2 <= bn) {
     console.log(`current: ${current}`);
     portions.push([numberToSlug(current), numberToSlug(current + portionSize)]);
     current += portionSize;
