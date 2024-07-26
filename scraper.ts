@@ -19,7 +19,7 @@ import { slugs } from "./slugs.ts";
 
 const db = new Database("data.sqlite");
 db.exec(`
-PRAGMA busy_timeout=1000;
+PRAGMA busy_timeout=5000;
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
 CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
