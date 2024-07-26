@@ -100,3 +100,13 @@ function numberToSlug(n: number): Slug {
   }
   throw new Error(`${n} is not valid`);
 }
+
+/**
+ * Use `body` to perform some calculation on `slugs`.
+ * Each one of `slugs` will be converted into a number and passed into `body`;
+ * the resulting number of `body` would be converted back into a Slug.
+ * @example arith(["a000", "b000"], ([a, b]) => (a + b) / 2)
+ */
+function arith(slugs: Slug[], body: (numbers: number[]) => number): Slug {
+  return numberToSlug(body(slugs.map(slugToNumber)));
+}
