@@ -90,11 +90,19 @@ function slugToNumber(slug: Slug): number {
   return sum - 1; // correct it back so that "0" is still 0, however.
 }
 
-// Ground truth implementation, except this is O(n).
+const numberToSlugMap = new Map() as Map<number, Slug>;
+// Ground truth implementation, except this is O(n) for the number, O(length^62)
+// for the corresponding slug. In other words, unusable.
+// I'm not able to divide-and-conquer without a way to add slugs directly
 function numberToSlug(n: number): Slug {
+  const cached = numberToSlugMap.get(n);
+  if (typeof cached !== "undefined") return cached;
   let i = 0;
   for (const s of slugs()) {
-    if (i === n) return s;
+    if (i === n) {
+      numberToSlugMap.set(n, s);
+      return s;
+    }
     if (i > n) break;
     i++;
   }
@@ -109,4 +117,23 @@ function numberToSlug(n: number): Slug {
  */
 function arith(slugs: Slug[], body: (numbers: number[]) => number): Slug {
   return numberToSlug(body(slugs.map(slugToNumber)));
+}
+
+/**
+ * Given a range [a, b], return `n` ranges that divide [a, b] roughly evenly.
+ */
+export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
+  if (n === 1) return [[a, b]];
+  const an = slugToNumber(a);
+  const bn = slugToNumber(b);
+  const portionSize = Math.floor(Math.abs(an - bn) / n);
+  const portions: [Slug, Slug][] = [];
+  let current = an;
+  while (current + portionSize < bn) {
+    console.log(`current: ${current}`);
+    portions.push([numberToSlug(current), numberToSlug(current + portionSize)]);
+    current += portionSize;
+  }
+  portions.push([numberToSlug(current), b]);
+  return portions;
 }

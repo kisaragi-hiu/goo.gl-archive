@@ -15,7 +15,7 @@ import shuffle from "lodash/shuffle";
 import truncate from "lodash/truncate";
 
 import type { Slug } from "./slugs.ts";
-import { slugs } from "./slugs.ts";
+import { slugs, dividePortions } from "./slugs.ts";
 
 const db = new Database("data.sqlite");
 db.exec(`
@@ -191,12 +191,12 @@ async function scrape(
   }
 }
 
-function parseThreadsArg(raw: string | undefined) {
-  if (typeof raw === "undefined") return 8;
+function parseThreadsArg(raw: string | undefined, dflt: number = 8) {
+  if (typeof raw === "undefined") return dflt;
   const int = parseInt(raw);
   if (Number.isNaN(int) || int <= 0) {
-    console.log("Invalid threads argument, using 8");
-    return 8;
+    console.log("Invalid threads argument, using default");
+    return dflt;
   }
   return int;
 }
@@ -220,8 +220,6 @@ const parsedArgs = parseArgs({
   },
 });
 
-const threads = parseThreadsArg(parsedArgs.values.threads);
-
 function writeDoneInfo() {
   appendFileSync("done.jsonl", JSON.stringify(process.argv.slice(2)) + "\n");
 }
@@ -231,8 +229,8 @@ function writeDoneInfo() {
  */
 async function scrapeArrayConcurrent(slugs: Slug[]) {
   await Promise.all(
-    chunkN(shuffle(slugs), threads).map((arr) =>
-      scrape(arr, parsedArgs.values.prefix),
+    chunkN(shuffle(slugs), parseThreadsArg(parsedArgs.values.threads)).map(
+      (arr) => scrape(arr, parsedArgs.values.prefix),
     ),
   );
   writeDoneInfo();
@@ -329,10 +327,30 @@ Other commands:
     }),
   );
 } else {
-  await scrape(
-    parsedArgs.values.init,
-    parsedArgs.values.prefix,
-    parsedArgs.values.until,
-  );
+  const init = parsedArgs.values.init;
+  const until = parsedArgs.values.until;
+  const prefix = parsedArgs.values.prefix;
+  // const threads = parseThreadsArg(parsedArgs.values.threads, 1);
+  // const jobs: { init?: Slug; until?: Slug; prefix?: string }[] = [];
+  // if (typeof init === "string" && typeof until === "string") {
+  //   jobs.push(
+  //     ...dividePortions(init, until, threads).map(([a, b]) => ({
+  //       init: a,
+  //       until: b,
+  //       prefix: parsedArgs.values.prefix,
+  //     })),
+  //   );
+  // } else {
+  //   jobs.push({ init, until });
+  // }
+  // await Promise.all(
+  //   jobs.map((job) => {
+  //     console.log(`Starting job: ${JSON.stringify(job)}`);
+  //     return scrape(job.init, job.prefix, job.until).then(() => {
+  //       appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
+  //     });
+  //   }),
+  // );
+  await scrape(init, prefix, until);
   writeDoneInfo();
 }
