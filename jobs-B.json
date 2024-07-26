@@ -1,14 +1,14 @@
 [
   { "init": "S000", "until": "W000" },
-  { "init": "f000", "until": "g000" },
   { "init": "h000", "until": "k000" },
   { "init": "l000", "until": "p000" },
   { "init": "q000", "until": "s000" },
   { "init": "s000", "until": "v000" },
-  { "init": "v000", "until": "x000" },
-  { "init": "x000", "until": "z000" },
   { "init": "a0000", "until": "b0000" },
   { "prefix": "fb", "init": "2000", "until": "6000" },
-  { "prefix": "fb", "init": "e000", "until": "i000" },
+  { "prefix": "fb", "init": "D000", "until": "K000" },
+  { "prefix": "fb", "init": "K000", "until": "T000" },
+  { "prefix": "fb", "init": "T000", "until": "a000" },
+  { "prefix": "fb", "init": "t000", "until": "v000" },
   { "prefix": "fb", "init": "x000", "until": "z000" }
 ]
