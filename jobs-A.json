@@ -19,6 +19,11 @@
   { "init": "1mfcM", "until": "1tKoB" },
   { "init": "1tKoB", "until": "20000" },
 
+  { "init": "26K6k", "until": "2JA00" },
+  { "init": "2JA00", "until": "2W000" },
+  { "init": "2ZLIR", "until": "2mf00" },
+  { "init": "2mf00", "until": "30000" },
+
   { "prefix": "fb", "init": "9rBG", "until": "A000" },
   { "prefix": "fb", "init": "lsPK", "until": "o000" },
   { "prefix": "fb", "init": "ssBV", "until": "t000" },
