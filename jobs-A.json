@@ -32,7 +32,13 @@
   { "init": "2ZLIR", "until": "2mf00" },
   { "init": "2mf00", "until": "30000" },
 
-  { "prefix": "fb", "init": "9rBG", "until": "A000" },
-  { "prefix": "fb", "init": "lsPK", "until": "o000" },
-  { "prefix": "fb", "init": "zSHn", "until": "00000" }
+  { "prefix": "fb", "init": "m300", "until": "mX00" },
+  { "prefix": "fb", "init": "mX00", "until": "n100" },
+  { "prefix": "fb", "init": "n100", "until": "nV00" },
+  { "prefix": "fb", "init": "nV00", "until": "o000" },
+
+  { "prefix": "fb", "init": "zd00", "until": "zi00" },
+  { "prefix": "fb", "init": "zi00", "until": "zn00" },
+  { "prefix": "fb", "init": "zn00", "until": "zs00" },
+  { "prefix": "fb", "init": "zs00", "until": "00000" }
 ]

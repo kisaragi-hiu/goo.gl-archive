@@ -92,7 +92,7 @@
 - z0000~zzzzz: pending
 - zzzzz~zzzzzz: pending
 - fb/0~6000: done
-- fb/6000~A000: A
+- fb/6000~A000: done
 - fb/A000~C000: done
 - fb/C000~D000: done
 - fb/D000~K000: B

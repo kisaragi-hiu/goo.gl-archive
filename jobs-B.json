@@ -1,8 +1,8 @@
 [
-  { "init": "V000", "until": "VF00" },
-  { "init": "VF00", "until": "VU00" },
-  { "init": "VU00", "until": "Vj00" },
-  { "init": "Vj00", "until": "W000" },
+  { "init": "Vj00", "until": "Vn00" },
+  { "init": "Vn00", "until": "Vr00" },
+  { "init": "Vr00", "until": "Vv00" },
+  { "init": "Vv00", "until": "W000" },
 
   { "init": "h000", "until": "k000" },
   { "init": "m000", "until": "n000" },
