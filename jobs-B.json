@@ -1,14 +1,27 @@
 [
-  { "init": "S000", "until": "W000" },
+  { "init": "V000", "until": "VF00" },
+  { "init": "VF00", "until": "VU00" },
+  { "init": "VU00", "until": "Vj00" },
+  { "init": "Vj00", "until": "W000" },
+
   { "init": "h000", "until": "k000" },
-  { "init": "l000", "until": "p000" },
+  { "init": "m000", "until": "n000" },
+  { "init": "n000", "until": "o000" },
+  { "init": "o000", "until": "p000" },
   { "init": "q000", "until": "s000" },
   { "init": "s000", "until": "v000" },
   { "init": "a0000", "until": "aF000" },
   { "init": "aF000", "until": "aU000" },
   { "init": "aU000", "until": "aj000" },
   { "init": "aj000", "until": "b0000" },
-  { "prefix": "fb", "init": "D000", "until": "K000" },
+
+  { "prefix": "fb", "init": "D000", "until": "EA00" },
+  { "prefix": "fb", "init": "EA00", "until": "FK00" },
+  { "prefix": "fb", "init": "FK00", "until": "GU00" },
+  { "prefix": "fb", "init": "GU00", "until": "He00" },
+  { "prefix": "fb", "init": "He00", "until": "Io00" },
+  { "prefix": "fb", "init": "Io00", "until": "K000" },
+
   { "prefix": "fb", "init": "K000", "until": "T000" },
   { "prefix": "fb", "init": "T000", "until": "a000" },
 
