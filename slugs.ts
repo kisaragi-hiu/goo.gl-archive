@@ -132,10 +132,16 @@ export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
   // The * 2 is to prevent something like [[0, 4], [4, 8], [8, 9]]
   // I want the last part to be larger than the portionSize
   while (current + portionSize * 2 <= bn) {
-    console.log(`current: ${current}`);
     portions.push([numberToSlug(current), numberToSlug(current + portionSize)]);
     current += portionSize;
   }
   portions.push([numberToSlug(current), b]);
   return portions;
+}
+
+/** Take `portions` and convert it to ready-to-copy JSON. */
+function portionsToJobs(portions: [Slug, Slug][]) {
+  console.log(
+    JSON.stringify(portions.map(([init, until]) => ({ init, until }))),
+  );
 }

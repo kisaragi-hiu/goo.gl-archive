@@ -168,7 +168,7 @@ async function scrape(
       if (typeof location === "string") {
         // state: resolved to a URL
         slugInsert(slug, location);
-        console.log(`${slug} -> ${truncate(location, { length: 100 })}`);
+        console.log(`${slug} -> ${location}`);
       } else {
         // state: 301/302 but no location
       }
