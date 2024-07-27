@@ -143,3 +143,25 @@ export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
 function portionsToJobs(portions: [Slug, Slug][]) {
   return portions.map(([init, until]) => ({ init, until }));
 }
+
+function numberToSlug2(n: number) {
+  const digits = chars.length;
+  let tmp = n + 1;
+  let power = 0;
+  while (true) {
+    if (n / digits ** power < 1) {
+      // we went one too high
+      power--;
+      break;
+    }
+    power++;
+  }
+  const newdigits = [];
+  for (let i = power; i >= 0; i--) {
+    const digitValue = Math.floor(tmp / digits ** i);
+    console.log(digitValue);
+    newdigits.push(chars[digitValue]);
+    tmp -= digitValue * digits ** i;
+  }
+  return newdigits;
+}
