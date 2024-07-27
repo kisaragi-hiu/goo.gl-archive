@@ -17,13 +17,7 @@
 ## Progress
 
 - 0~0000: done
-- 0000~S000: done
-- S000~W000: B
-- W000~Y000: done
-- Y000~a000: done
-- a000~f000: done
-- f000~g000: done
-- g000~h000: done
+- 0000~h000: done
 - h000~k000: B
 - k000~l000: done
 - l000~p000: B
@@ -100,11 +94,7 @@
 - fb/T000~a000: B
 - fb/a000~i000: done
 - fb/i000~o000: A
-- fb/o000~p000: done
-- fb/p000~t000: done
-- fb/t000~v000: B
-- fb/v000~x000: done
-- fb/x000~z000: B
+- fb/o000~z000: done
 - fb/z000~00000: A
 - fb/00000~zzzzzz: pending
 

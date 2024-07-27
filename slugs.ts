@@ -141,7 +141,5 @@ export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
 
 /** Take `portions` and convert it to ready-to-copy JSON. */
 function portionsToJobs(portions: [Slug, Slug][]) {
-  console.log(
-    JSON.stringify(portions.map(([init, until]) => ({ init, until }))),
-  );
+  return portions.map(([init, until]) => ({ init, until }));
 }
