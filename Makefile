@@ -24,7 +24,7 @@ scrapeMentions:
 
 currentJobsA:
 	bunx concurrently --restart-tries 5 \
-		"bun scraper.ts --scrapeJobFile jobs-A.json"
+		"bun scraper.ts --scrapeJobFile jobs-A.ts"
 
 restartA:
 	pkill -f -9 concurrently
