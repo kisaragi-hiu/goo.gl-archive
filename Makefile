@@ -32,4 +32,4 @@ restartA:
 	nohup make currentJobsA >/dev/null &
 
 currentJobsB:
-	bun scraper.ts --scrapeJobFile jobs-B.json
+	bun scraper.ts --scrapeJobFile jobs-B.ts

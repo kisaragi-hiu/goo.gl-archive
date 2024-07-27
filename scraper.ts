@@ -323,9 +323,12 @@ Other commands:
     ),
   );
 } else if (typeof parsedArgs.values.scrapeJobFile === "string") {
-  const jobs = JSON.parse(
-    readFileSync(parsedArgs.values.scrapeJobFile, { encoding: "utf-8" }),
-  ) as Array<{ init: Slug; until: Slug; prefix?: string | undefined }>;
+  const jobs = (await import(`./${parsedArgs.values.scrapeJobFile}`))
+    .default as Array<{
+    init: Slug;
+    until: Slug;
+    prefix?: string | undefined;
+  }>;
   const justOne = parsedArgs.values.justOne;
   await Promise.all(
     jobs.map((job) => {
