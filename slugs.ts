@@ -62,18 +62,7 @@ export function* slugs(
   }
 }
 
-// Ground truth implementation, except this is O(length^62).
-// function slugToNumber(slug: Slug): number {
-//   let n = 0;
-//   for (const s of slugs()) {
-//     if (s === slug) break;
-//     if (s.length > slug.length) throw new Error(`${slug} is not a valid slug`);
-//     n++;
-//   }
-//   return n;
-// }
-
-function slugToNumber(slug: Slug): number {
+export function slugToNumber(slug: Slug): number {
   const reversed = [...slug].reverse();
   const len = slug.length;
   const charCount = chars.length;
@@ -90,24 +79,56 @@ function slugToNumber(slug: Slug): number {
   return sum - 1; // correct it back so that "0" is still 0, however.
 }
 
-const numberToSlugMap = new Map() as Map<number, Slug>;
+export function numberToSlug(n: number): Slug {
+  const charCount = chars.length;
+  // "0" has a value of 1
+  let tmp = n + 1;
+  let finalDigitCount = 1;
+  for (let i = 0; true; i++) {
+    if (n / charCount ** i < 1) {
+      finalDigitCount = Math.max(i, 1);
+      break;
+    }
+  }
+  const newdigits: string[] = [];
+  for (let power = finalDigitCount - 1; power >= 0; power--) {
+    const digitValue = Math.floor(tmp / charCount ** power);
+    const char = chars.at(digitValue - 1);
+    newdigits.push(char);
+    tmp -= digitValue * charCount ** power;
+  }
+  return newdigits.join("");
+}
+
+// Ground truth implementation, except this is O(length^62).
+// function slugToNumber(slug: Slug): number {
+//   let n = 0;
+//   for (const s of slugs()) {
+//     if (s === slug) break;
+//     if (s.length > slug.length) throw new Error(`${slug} is not a valid slug`);
+//     n++;
+//   }
+//   return n;
+// }
+//
 // Ground truth implementation, except this is O(n) for the number, O(length^62)
 // for the corresponding slug. In other words, unusable.
 // I'm not able to divide-and-conquer without a way to add slugs directly
-function numberToSlug(n: number): Slug {
-  const cached = numberToSlugMap.get(n);
-  if (typeof cached !== "undefined") return cached;
-  let i = 0;
-  for (const s of slugs()) {
-    if (i === n) {
-      numberToSlugMap.set(n, s);
-      return s;
-    }
-    if (i > n) break;
-    i++;
-  }
-  throw new Error(`${n} is not valid`);
-}
+// const numberToSlugMap = new Map() as Map<number, Slug>;
+// function numberToSlug(n: number): Slug {
+//   const cached = numberToSlugMap.get(n);
+//   if (typeof cached !== "undefined") return cached;
+//   let i = 0;
+//   for (const s of slugs()) {
+//     if (i === n) {
+//       numberToSlugMap.set(n, s);
+//       return s;
+//     }
+//     if (i > n) break;
+//     i++;
+//   }
+//   throw new Error(`${n} is not valid`);
+// }
 
 /**
  * Use `body` to perform some calculation on `slugs`.
@@ -142,26 +163,4 @@ export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
 /** Take `portions` and convert it to ready-to-copy JSON. */
 function portionsToJobs(portions: [Slug, Slug][]) {
   return portions.map(([init, until]) => ({ init, until }));
-}
-
-function numberToSlug2(n: number) {
-  const digits = chars.length;
-  let tmp = n + 1;
-  let power = 0;
-  while (true) {
-    if (n / digits ** power < 1) {
-      // we went one too high
-      power--;
-      break;
-    }
-    power++;
-  }
-  const newdigits = [];
-  for (let i = power; i >= 0; i--) {
-    const digitValue = Math.floor(tmp / digits ** i);
-    console.log(digitValue);
-    newdigits.push(chars[digitValue]);
-    tmp -= digitValue * digits ** i;
-  }
-  return newdigits;
 }
