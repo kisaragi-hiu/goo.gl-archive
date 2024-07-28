@@ -48,16 +48,26 @@ function nextSlug(slug: Slug) {
 /**
  * Return a sequence of slugs starting from `init`, until it reaches the maximum
  * value in 6 digits.
+ *
  * If `until` is given, also stop when reaching `until`.
+ *
+ * If `prefix` is provided, make the slug "${prefix}/${slug}" instead. Some prefixes:
+ * - /fb/ for feedburner.com URLs
+ * - /maps/ for Google Maps - are these impacted?
  */
 export function* slugs(
   init?: Slug,
   until?: Slug,
+  prefix?: string,
 ): Generator<string, void, unknown> {
   let current = init || chars[0];
   // FIXME: "larger than" `until` should also cause it to stop
   while (current.length < 7 && current !== until) {
-    yield current;
+    if (typeof prefix === "undefined") {
+      yield current;
+    } else {
+      yield `${prefix}/${current}`;
+    }
     current = nextSlug(current);
   }
 }

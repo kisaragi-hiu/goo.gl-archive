@@ -12,6 +12,7 @@ const Database = (process.isBun
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
+import { roundRobin } from "iter-tools-es";
 
 import type { Slug } from "./slugs.ts";
 import { slugs } from "./slugs.ts";
@@ -163,29 +164,52 @@ async function scrapeSlug(slug: Slug) {
 
 /**
  * Do the actual scraping.
- * Obtain slugs from `iter`.
+ *
+ * Obtain slugs from `iter`. Common values include an array or the returned
+ * generator from the `slugs` function.
+ *
+ * Will attempt to scrape as many slugs at once as `threads`.
+ *
+ * If `justOne` is true, scrape one then immediately return. This helps to see
+ * the edges of blocks.
+ *
+ * If `slugFn` is provided, call that function for each slug.
  *
  * Already successfully stored values (including 404, which is a valid value for
  * "this resolves to nothing") are skipped, while errors are stored into a
  * separate table.
- *
- * If `prefix` is provided, make the slug "${prefix}/${slug}" instead. Some prefixes:
- * - /fb/ for feedburner.com URLs
- * - /maps/ for Google Maps - are these impacted?
- *
- * If `until` is provided, stop at that point instead of continuing indefinitely.
  */
 async function scrape(
   iter: Iterable<string>,
-  prefix?: string,
   /** Scrape just one slug, then return. */
   justOne?: boolean,
+  threads: number = 1,
+  slugFn?: (slug: Slug) => void,
 ): Promise<void> {
-  for (const it of iter) {
-    const slug = prefix ? `${prefix}/${it}` : it;
-    await scrapeSlug(slug);
-    if (justOne) break;
+  const iterator = iter[Symbol.iterator]();
+  const workers: unknown[] = [];
+  if (justOne) {
+    workers.push(0); // just one worker
+  } else {
+    // as many "workers" as in the `threads` argument
+    for (let i = threads; i > 0; i--) {
+      workers.push(0);
+    }
   }
+  await Promise.all(
+    workers.map(async () => {
+      let next = iterator.next();
+      while (!next.done) {
+        const slug = next.value;
+        await scrapeSlug(slug);
+        if (justOne) break;
+        if (typeof slugFn !== "undefined") {
+          slugFn(slug);
+        }
+        next = iterator.next();
+      }
+    }),
+  );
 }
 
 function parseThreadsArg(raw: string | undefined, dflt: number = 8) {
@@ -226,11 +250,7 @@ function writeDoneInfo() {
  * Scrape everything in `slugs` in multiple concurrent "threads".
  */
 async function scrapeArrayConcurrent(slugs: Slug[]) {
-  await Promise.all(
-    chunkN(shuffle(slugs), parseThreadsArg(parsedArgs.values.threads)).map(
-      (arr) => scrape(arr, parsedArgs.values.prefix),
-    ),
-  );
+  await scrape(shuffle(slugs), false, parseThreadsArg(parsedArgs.values.threads));
   writeDoneInfo();
 }
 
@@ -323,44 +343,29 @@ Other commands:
     until: Slug;
     prefix?: string | undefined;
   }>;
-  const justOne = parsedArgs.values.justOne;
-  await Promise.all(
-    jobs.map((job) => {
-      console.log(`Starting job: ${JSON.stringify(job)}`);
-      scrape(slugs(job.init, job.until), job.prefix, justOne).then(() => {
-        if (!justOne) {
-          appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
-        }
-      });
-    }),
+  /** For speeding up access from until to job. */
+  const jobsMap = new Map(jobs.map((job) => [job.until, job]));
+  const { justOne, threads } = parsedArgs.values;
+  const iterators = jobs.map((job) =>
+    slugs(job.init, job.until, job.prefix)[Symbol.iterator](),
+  );
+  await scrape(
+    roundRobin(...iterators),
+    justOne,
+    parseThreadsArg(threads),
+    (slug) => {
+      const job = jobsMap.get(slug);
+      // Although we're iterating in different blocks, we're always iterating
+      // up. So if an "until" slug has been scraped, that must mean its
+      // corresponding job is now done.
+      if (typeof job !== "undefined") {
+        appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
+      }
+    },
   );
 } else {
-  const init = parsedArgs.values.init;
-  const until = parsedArgs.values.until;
-  const prefix = parsedArgs.values.prefix;
-  const justOne = parsedArgs.values.justOne;
-  // const threads = parseThreadsArg(parsedArgs.values.threads, 1);
-  // const jobs: { init?: Slug; until?: Slug; prefix?: string }[] = [];
-  // if (typeof init === "string" && typeof until === "string") {
-  //   jobs.push(
-  //     ...dividePortions(init, until, threads).map(([a, b]) => ({
-  //       init: a,
-  //       until: b,
-  //       prefix: parsedArgs.values.prefix,
-  //     })),
-  //   );
-  // } else {
-  //   jobs.push({ init, until });
-  // }
-  // await Promise.all(
-  //   jobs.map((job) => {
-  //     console.log(`Starting job: ${JSON.stringify(job)}`);
-  //     return scrape(job.init, job.prefix, job.until).then(() => {
-  //       appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
-  //     });
-  //   }),
-  // );
-  await scrape(slugs(init, until), prefix, justOne);
+  const { init, until, prefix, justOne, threads } = parsedArgs.values;
+  await scrape(slugs(init, until, prefix), justOne, parseThreadsArg(threads));
   if (!justOne) {
     writeDoneInfo();
   }
