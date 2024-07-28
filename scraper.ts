@@ -90,6 +90,19 @@ function errorInsert(slug: Slug, status: number, message: string) {
 
 /* Reading DB */
 
+/**
+ * Get the minimum unscraped slug between `init` and `until`.
+ * `prefix` is like in the `slugs` function.
+ */
+function getMinUnscraped(init: Slug, until: Slug, prefix?: string) {
+  for (const slug of slugs(init, until, prefix)) {
+    if (slugStored(slug)) continue;
+    return slug;
+  }
+  // Everything between `init` and `until` have been scraped.
+  return undefined;
+}
+
 /** Return slugs of goo.gl links mentioned in values. */
 function getMentions(): string[] {
   return db
@@ -238,6 +251,7 @@ const parsedArgs = parseArgs({
     until: { type: "string" },
     justOne: { type: "boolean" },
     scrapeJobFile: { type: "string" },
+    returnProgress: { type: "boolean" },
 
     slugArrayFile: { type: "string" },
     rudimentaryProgress: { type: "string" },
@@ -291,6 +305,8 @@ Options:
   "init", "until", and "prefix", which have the same meanings as the options
   above. For example, [{"init": "0","until":"00"}] is the same as passing
   "--init 0 --until 00" on the command line.
+--returnProgress: use together with scrapeJobFile.
+  Return the smallest unscraped value of each block.
 
 Other commands:
 --rudimentaryProgress <glob>: Return the largest slug matching \`glob\`.
@@ -349,11 +365,24 @@ Other commands:
     until: Slug;
     prefix?: string | undefined;
   }>;
-  const { justOne, threads } = parsedArgs.values;
-  const iterators = jobs.map((job) =>
-    slugs(job.init, job.until, job.prefix)[Symbol.iterator](),
-  );
-  await scrape(roundRobin(...iterators), justOne, parseThreadsArg(threads));
+  if (parsedArgs.values.returnProgress) {
+    for (const { init, until, prefix } of jobs) {
+      const minUnscraped = getMinUnscraped(init, until, prefix);
+      if (typeof minUnscraped === "undefined") {
+        console.log(`${prefix ? prefix + ": " : ""}${init}~${until}: done`);
+      } else {
+        console.log(
+          `${prefix ? prefix + ": " : ""}${init}~${until}: ${minUnscraped}`,
+        );
+      }
+    }
+  } else {
+    const { justOne, threads } = parsedArgs.values;
+    const iterators = jobs.map((job) =>
+      slugs(job.init, job.until, job.prefix)[Symbol.iterator](),
+    );
+    await scrape(roundRobin(...iterators), justOne, parseThreadsArg(threads));
+  }
 } else {
   const { init, until, prefix, justOne, threads } = parsedArgs.values;
   await scrape(slugs(init, until, prefix), justOne, parseThreadsArg(threads));
