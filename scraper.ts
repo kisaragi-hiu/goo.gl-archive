@@ -122,7 +122,7 @@ function writeMentions(options: { showCount?: boolean } = {}) {
 async function scrapeSlug(slug: Slug) {
   if (slugStored(slug)) {
     // console.log(`"${slug}" already stored`);
-    return;
+    return "skipped";
   }
   // From 2024-08-23, some requests will start being served an "interstitial page".
   // The "si=1" query param is offered to suppress this behavior.
@@ -199,10 +199,16 @@ async function scrape(
   await Promise.all(
     workers.map(async () => {
       let next = iterator.next();
+      let allSkippedSoFar = true;
       while (!next.done) {
         const slug = next.value;
-        await scrapeSlug(slug);
-        if (justOne) break;
+        const result = await scrapeSlug(slug);
+        if (allSkippedSoFar && result !== "skipped") {
+          allSkippedSoFar = false;
+        }
+        if (justOne && !allSkippedSoFar) {
+          break;
+        }
         if (typeof slugFn !== "undefined") {
           slugFn(slug);
         }
