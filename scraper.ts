@@ -12,7 +12,6 @@ const Database = (process.isBun
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import shuffle from "lodash/shuffle";
-import truncate from "lodash/truncate";
 
 import type { Slug } from "./slugs.ts";
 import { slugs } from "./slugs.ts";
@@ -90,14 +89,6 @@ function errorInsert(slug: Slug, status: number, message: string) {
 
 /* Reading DB */
 
-/** Return slugs that have been stored. */
-function getCurrentSlugs(): string[] {
-  return db
-    .prepare("select slug from mapping")
-    .all()
-    .map((obj) => (obj as { slug: Slug }).slug);
-}
-
 /** Return slugs of goo.gl links mentioned in values. */
 function getMentions(): string[] {
   return db
@@ -125,11 +116,54 @@ function writeMentions(options: { showCount?: boolean } = {}) {
 }
 
 /**
+ * Do the actual scraping for one slug.
+ */
+async function scrapeSlug(slug: Slug) {
+  if (slugStored(slug)) {
+    // console.log(`"${slug}" already stored`);
+    return;
+  }
+  // From 2024-08-23, some requests will start being served an "interstitial page".
+  // The "si=1" query param is offered to suppress this behavior.
+  //
+  // The deadline for the whole ordeal is 2025-08-25.
+  const result = await fetch(`https://goo.gl/${slug}?si=1`, {
+    method: "head",
+    redirect: "manual",
+  });
+  const status = result.status;
+  if (status === 301 || status === 302) {
+    const location = result.headers.get("location");
+    if (typeof location === "string") {
+      // state: resolved to a URL
+      slugInsert(slug, location);
+      console.log(`${slug} -> ${location}`);
+    } else {
+      // state: 301/302 but no location
+    }
+  } else if (status === 404) {
+    // state: resolved to no mapping
+    slugInsert(slug, null);
+    console.log(`${slug} -> NULL`);
+  } else if (status === 400) {
+    // state: generic error? Disallowed (blocked) links use this, some
+    // "invalid dynamic link" errors also use this.
+    errorInsert(slug, status, result.statusText);
+    console.log(`${slug} -> 400`);
+  } else if (status === 302) {
+    // state: this is an internal page. Store the status, at least.
+    errorInsert(slug, status, result.statusText);
+    console.log(`${slug} -> ${status}`);
+  } else {
+    // state: what the fuck?
+    errorInsert(slug, status, result.statusText);
+    console.log(`${slug} -> error (${status})`);
+  }
+}
+
+/**
  * Do the actual scraping.
- * Start from the slug given as `init`.
- *
- * If `init` is actually an array of slugs, iterate through it instead of the
- * infinite sequence starting from `init`.
+ * Obtain slugs from `iter`.
  *
  * Already successfully stored values (including 404, which is a valid value for
  * "this resolves to nothing") are skipped, while errors are stored into a
@@ -142,54 +176,14 @@ function writeMentions(options: { showCount?: boolean } = {}) {
  * If `until` is provided, stop at that point instead of continuing indefinitely.
  */
 async function scrape(
-  init?: Slug | Slug[],
+  iter: Iterable<string>,
   prefix?: string,
-  until?: Slug,
   /** Scrape just one slug, then return. */
   justOne?: boolean,
 ): Promise<void> {
-  for (const it of Array.isArray(init) ? init : slugs(init, until)) {
+  for (const it of iter) {
     const slug = prefix ? `${prefix}/${it}` : it;
-    if (slugStored(slug)) {
-      // console.log(`"${slug}" already stored`);
-      continue;
-    }
-    // From 2024-08-23, some requests will start being served an "interstitial page".
-    // The "si=1" query param is offered to suppress this behavior.
-    //
-    // The deadline for the whole ordeal is 2025-08-25.
-    const result = await fetch(`https://goo.gl/${slug}?si=1`, {
-      method: "head",
-      redirect: "manual",
-    });
-    const status = result.status;
-    if (status === 301 || status === 302) {
-      const location = result.headers.get("location");
-      if (typeof location === "string") {
-        // state: resolved to a URL
-        slugInsert(slug, location);
-        console.log(`${slug} -> ${location}`);
-      } else {
-        // state: 301/302 but no location
-      }
-    } else if (status === 404) {
-      // state: resolved to no mapping
-      slugInsert(slug, null);
-      console.log(`${slug} -> NULL`);
-    } else if (status === 400) {
-      // state: generic error? Disallowed (blocked) links use this, some
-      // "invalid dynamic link" errors also use this.
-      errorInsert(slug, status, result.statusText);
-      console.log(`${slug} -> 400`);
-    } else if (status === 302) {
-      // state: this is an internal page. Store the status, at least.
-      errorInsert(slug, status, result.statusText);
-      console.log(`${slug} -> ${status}`);
-    } else {
-      // state: what the fuck?
-      errorInsert(slug, status, result.statusText);
-      console.log(`${slug} -> error (${status})`);
-    }
+    await scrapeSlug(slug);
     if (justOne) break;
   }
 }
@@ -333,7 +327,7 @@ Other commands:
   await Promise.all(
     jobs.map((job) => {
       console.log(`Starting job: ${JSON.stringify(job)}`);
-      scrape(job.init, job.prefix, job.until, justOne).then(() => {
+      scrape(slugs(job.init, job.until), job.prefix, justOne).then(() => {
         if (!justOne) {
           appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
         }
@@ -366,7 +360,7 @@ Other commands:
   //     });
   //   }),
   // );
-  await scrape(init, prefix, until, justOne);
+  await scrape(slugs(init, until), prefix, justOne);
   if (!justOne) {
     writeDoneInfo();
   }
