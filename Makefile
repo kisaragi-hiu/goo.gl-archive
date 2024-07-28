@@ -1,6 +1,9 @@
 SSH_HOST := kisaragi@git.kisaragi-hiu.com
 .ONESHELL:
 
+rate:
+	bun rate.ts
+
 backup:
 	make checkpoint
 	cp data.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
