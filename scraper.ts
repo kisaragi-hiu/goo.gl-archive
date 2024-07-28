@@ -349,26 +349,11 @@ Other commands:
     until: Slug;
     prefix?: string | undefined;
   }>;
-  /** For speeding up access from until to job. */
-  const jobsMap = new Map(jobs.map((job) => [job.until, job]));
   const { justOne, threads } = parsedArgs.values;
   const iterators = jobs.map((job) =>
     slugs(job.init, job.until, job.prefix)[Symbol.iterator](),
   );
-  await scrape(
-    roundRobin(...iterators),
-    justOne,
-    parseThreadsArg(threads),
-    (slug) => {
-      const job = jobsMap.get(slug);
-      // Although we're iterating in different blocks, we're always iterating
-      // up. So if an "until" slug has been scraped, that must mean its
-      // corresponding job is now done.
-      if (typeof job !== "undefined") {
-        appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
-      }
-    },
-  );
+  await scrape(roundRobin(...iterators), justOne, parseThreadsArg(threads));
 } else {
   const { init, until, prefix, justOne, threads } = parsedArgs.values;
   await scrape(slugs(init, until, prefix), justOne, parseThreadsArg(threads));
