@@ -250,7 +250,11 @@ function writeDoneInfo() {
  * Scrape everything in `slugs` in multiple concurrent "threads".
  */
 async function scrapeArrayConcurrent(slugs: Slug[]) {
-  await scrape(shuffle(slugs), false, parseThreadsArg(parsedArgs.values.threads));
+  await scrape(
+    shuffle(slugs),
+    false,
+    parseThreadsArg(parsedArgs.values.threads),
+  );
   writeDoneInfo();
 }
 
@@ -264,25 +268,25 @@ The default "command" is to brute force through every 1~6 char combination of
 0-9A-Za-z, starting with "0" and ending with "zzzzzz".
 
 Options:
+--threads <n>: Run this many concurrent fetches at once.
 --prefix <string>: add a prefix before the sequential slug.
   Using "--prefix foo" would brute force foo/0, foo/1, ..., foo/zzzzzz.
 --init <slug>: start from this slug instead of "0".
 --until <slug>: end the command after this slug instead of "zzzzzz".
   When using --init and --until together to control the "block" an invocation is
   responsible, this can effectively allow somewhat manually coordinating
-  multiple jobs to run on different blocks of the possible space at the same time.
-
+  multiple invocations to run on different blocks of the possible space at the
+  same time.
 --justOne <slug>: Scrape just the next unscraped slug in the defined range.
   This allows seeing the "edge" of a block.
   Also applies for --scrapeJobFile.
-
 --scrapeJobFile <file>: Scrape jobs defined in \`file\`.
   The file should contain JSON for an array of objects. Each object can specify
   "init", "until", and "prefix", which have the same meanings as the options
   above. For example, [{"init": "0","until":"00"}] is the same as passing
   "--init 0 --until 00" on the command line.
 
-Commands:
+Other commands:
 --rudimentaryProgress <glob>: Return the largest slug matching \`glob\`.
   "Largest" is just based on SQLite's sorting. Notably, this sorts a000 above
   a0000, so it's only really useful with globs like "a????" where the character
@@ -290,15 +294,12 @@ Commands:
   For blocks that have only ever been scraped sequentially, this provides a
   useful view on the progress.
 
-Other commands:
 --help, -h: Show this message.
 
 --slugArrayFile <file>: Scrape slugs in \`file\` instead of sequentially.
   Sequential scraping is described below.
   \`file\` should be a JSON file containing an array of strings; each string
   should be a slug, like "abcd" or "fb/1234".
---threads <n>: Try this many concurrent fetches when applicable.
-  Currently this is just for --mentionsScrape and --slugArrayFile.
 
 --mentionsExport: Write mentioned slugs into ./mentioned-slugs.json.
   Some goo.gl links resolve into another goo.gl link. Others mention a goo.gl
@@ -308,7 +309,6 @@ Other commands:
 --mentionsScrape: Do mentionsExport, then scrape every mentioned slug.
   There are some links that are more than one level deep. This can be run in a
   loop in order to go through them.
-
 `.trim(),
   );
 } else if (typeof parsedArgs.values.rudimentaryProgress === "string") {
