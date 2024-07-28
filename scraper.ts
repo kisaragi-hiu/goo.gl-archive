@@ -416,6 +416,7 @@ Other commands:
             seenInitSlugs.add(slug);
             return;
           }
+          console.log(`done: ${JSON.stringify(job)}`);
           appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
         }
       },
