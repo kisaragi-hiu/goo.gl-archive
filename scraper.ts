@@ -404,8 +404,13 @@ Other commands:
           // remember that.
           // The 2nd time (or (1 + <number of blocks whose init is it>)-th time)
           // it is seen, we report it as done as usual.
+          // Assumptions:
+          // - We assume no more than two blocks have the same init or until.
+          //   This could be fixed by tracking the number instead of using a
+          //   boolean, but the blocks could also just be well formed.
+          // - We also assume no blocks are overlapping elsewhere.
           if (
-            !seenInitSlugs.get(slug) &&
+            !seenInitSlugs.has(slug) &&
             jobs.some(({ init }) => init === job.until)
           ) {
             seenInitSlugs.add(slug);
