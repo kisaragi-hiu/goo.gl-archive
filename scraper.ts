@@ -381,7 +381,40 @@ Other commands:
     const iterators = jobs.map((job) =>
       slugs(job.init, job.until, job.prefix)[Symbol.iterator](),
     );
-    await scrape(roundRobin(...iterators), justOne, parseThreadsArg(threads));
+    /** For speeding up access from until to job. */
+    const jobsMap = new Map(
+      jobs.map((job) => {
+        const untilSlug = job.prefix ? `${job.prefix}/${job.until}` : job.until;
+        return [untilSlug, job];
+      }),
+    );
+    const seenInitSlugs: Set<Slug> = new Set();
+    await scrape(
+      roundRobin(...iterators),
+      justOne,
+      parseThreadsArg(threads),
+      (slug) => {
+        const job = jobsMap.get(slug);
+        // Although we're iterating in different blocks, we're always iterating
+        // up. So if an "until" slug has been scraped, that means its
+        // corresponding job is likely now done.
+        if (typeof job !== "undefined") {
+          // If the until of the block is the init of another block, the first
+          // time we see it would be for that other block, so skip it and
+          // remember that.
+          // The 2nd time (or (1 + <number of blocks whose init is it>)-th time)
+          // it is seen, we report it as done as usual.
+          if (
+            !seenInitSlugs.get(slug) &&
+            jobs.some(({ init }) => init === job.until)
+          ) {
+            seenInitSlugs.add(slug);
+            return;
+          }
+          appendFileSync("done.jsonl", JSON.stringify(job) + "\n");
+        }
+      },
+    );
   }
 } else {
   const { init, until, prefix, justOne, threads } = parsedArgs.values;
