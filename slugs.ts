@@ -164,3 +164,20 @@ export function dividePortions(a: Slug, b: Slug, n: number): [Slug, Slug][] {
 function portionsToJobs(portions: [Slug, Slug][]) {
   return portions.map(([init, until]) => ({ init, until }));
 }
+
+function divideJobs(
+  jobs: { prefix?: string; init: Slug; until: Slug }[],
+  n: number,
+) {
+  const newJobs: typeof jobs = [];
+  for (const job of jobs) {
+    newJobs.push(
+      ...dividePortions(job.init, job.until, n).map(([a, b]) => ({
+        prefix: job.prefix,
+        init: a,
+        until: b,
+      })),
+    );
+  }
+  return newJobs;
+}
