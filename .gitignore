@@ -4,3 +4,4 @@ external-slugs.json
 *.sqlite-wal
 node_modules
 mentioned-slugs.json
+/done.jsonl
