@@ -24,7 +24,7 @@ scrapeMentions:
 
 currentJobsA:
 	bunx concurrently --restart-tries 5 \
-		"bun scraper.ts --scrapeJobFile jobs-A.ts"
+		"bun scraper.ts --scrapeJobFile jobs-A.ts --threads 128"
 
 restartA:
 	pkill -f -9 concurrently
@@ -32,4 +32,4 @@ restartA:
 	nohup make currentJobsA >/dev/null &
 
 currentJobsB:
-	bun scraper.ts --scrapeJobFile jobs-B.ts
+	bun scraper.ts --scrapeJobFile jobs-B.ts --threads 128
