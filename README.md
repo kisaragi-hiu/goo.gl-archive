@@ -78,10 +78,7 @@
 - z0000~zzzzz: pending
 - zzzzz~zzzzzz: pending
 - fb/0~0000: done
-- fb/0000~K000: done
-- fb/K000~T000: B
-- fb/T000~a000: B
-- fb/a000~00000: done
+- fb/0000~00000: done
 - fb/00000~zzzzzz: pending
 
 ## Schema
