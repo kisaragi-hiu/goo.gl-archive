@@ -40,4 +40,4 @@ restartA:
 	nohup make currentJobsA >/dev/null &
 
 currentJobsB:
-	bun scraper.ts --scrapeJobFile jobs-B.ts --threads 128
+	bun scraper.ts --scrapeJobFile jobs-B.ts --threads 32
