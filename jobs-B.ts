@@ -1,6 +1,6 @@
 export default [
   // "a0000" ~ "b0000"
-  { init: "a0000", until: "b0000" },
+  { init: "a0000", until: "a4w00" },
   { init: "a4w00", until: "a7S00" },
   { init: "a7S00", until: "a9y00" },
   { init: "a9y00", until: "aCU00" },
