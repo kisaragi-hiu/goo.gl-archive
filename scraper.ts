@@ -269,12 +269,8 @@ function writeDoneInfo() {
 /**
  * Scrape everything in `slugs` in multiple concurrent "threads".
  */
-async function scrapeArrayConcurrent(slugs: Slug[]) {
-  await scrape(
-    shuffle(slugs),
-    false,
-    parseThreadsArg(parsedArgs.values.threads),
-  );
+async function scrapeArrayConcurrent(slugs: Slug[], threads: number) {
+  await scrape(shuffle(slugs), false, threads);
   writeDoneInfo();
 }
 
@@ -351,12 +347,16 @@ Other commands:
   writeMentions({ showCount: true });
 } else if (parsedArgs.values.mentionsScrape) {
   writeMentions({ showCount: true });
-  scrapeArrayConcurrent(getMentions());
+  scrapeArrayConcurrent(
+    getMentions(),
+    parseThreadsArg(parsedArgs.values.threads),
+  );
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
   scrapeArrayConcurrent(
     JSON.parse(
       readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
     ),
+    parseThreadsArg(parsedArgs.values.threads),
   );
 } else if (typeof parsedArgs.values.scrapeJobFile === "string") {
   const jobs = (await import(`./${parsedArgs.values.scrapeJobFile}`))
