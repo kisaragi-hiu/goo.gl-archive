@@ -42,6 +42,12 @@ function chunkN<Elem>(arr: Elem[], sublists: number) {
   return buckets;
 }
 
+function formatPercent(n: number) {
+  // times 100 to convert to the written percentage (0.12 = "12"%)
+  // times another 100 to preserve 2 digits through Math.floor
+  return `${Math.floor(n * 100 * 100) / 100}%`;
+}
+
 /* Writing */
 
 const slugStoredStmt = db.prepare("SELECT slug FROM mapping WHERE slug = ?");
@@ -347,14 +353,21 @@ Other commands:
   scrape(mentions, false, parseThreadsArg(parsedArgs.values.threads));
   writeDoneInfo();
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
-  scrape(
-    JSON.parse(
-      readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
-    ),
-    false,
-    parseThreadsArg(parsedArgs.values.threads),
+  const slugs = JSON.parse(
+    readFileSync(parsedArgs.values.slugArrayFile, { encoding: "utf-8" }),
   );
-  writeDoneInfo();
+  if (parsedArgs.values.returnProgress) {
+    let done = 0;
+    for (const slug of slugs) {
+      if (slugStored(slug)) done++;
+    }
+    console.log(
+      `${done} / ${slugs.length} (${formatPercent(done / slugs.length)})`,
+    );
+  } else {
+    scrape(slugs, false, parseThreadsArg(parsedArgs.values.threads));
+    writeDoneInfo();
+  }
 } else if (typeof parsedArgs.values.scrapeJobFile === "string") {
   const jobs = (await import(`./${parsedArgs.values.scrapeJobFile}`))
     .default as Array<{
@@ -368,14 +381,10 @@ Other commands:
       if (typeof minUnscraped === "undefined") {
         console.log(`${prefix ? prefix + ": " : ""}${init}~${until}: done`);
       } else {
-        const percent =
-          Math.floor(
-            // times 100 to convert to the written percentage (0.12 = "12"%)
-            // times another 100 to preserve 2 digits through the floor
-            10000 *
-              ((slugToNumber(minUnscraped) - slugToNumber(init)) /
-                (slugToNumber(until) - slugToNumber(init))),
-          ) / 100; // cancel out the extra 100x
+        const percent = formatPercent(
+          (slugToNumber(minUnscraped) - slugToNumber(init)) /
+            (slugToNumber(until) - slugToNumber(init)),
+        );
         console.log(
           `${prefix ? prefix + ": " : ""}${init}~${until}: ${minUnscraped} (${percent}%)`,
         );
