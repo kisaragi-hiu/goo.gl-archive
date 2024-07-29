@@ -119,6 +119,10 @@ function getMentions(): string[] {
     .filter((slug) => !slugStored(slug));
 }
 
+/**
+ * Write mentions to "mentioned-slugs.json", then return them.
+ * If `showCount` is true, also show how many mentions there are.
+ */
 function writeMentions(options: { showCount?: boolean } = {}) {
   const mentions = getMentions();
   writeFileSync("mentioned-slugs.json", JSON.stringify(mentions));
@@ -127,6 +131,7 @@ function writeMentions(options: { showCount?: boolean } = {}) {
   );
   if (options.showCount)
     console.log(`There are ${mentions.length} mentioned slugs`);
+  return mentions;
 }
 
 /**
@@ -346,11 +351,8 @@ Other commands:
 } else if (parsedArgs.values.mentionsCount) {
   writeMentions({ showCount: true });
 } else if (parsedArgs.values.mentionsScrape) {
-  writeMentions({ showCount: true });
-  scrapeArrayConcurrent(
-    getMentions(),
-    parseThreadsArg(parsedArgs.values.threads),
-  );
+  const mentions = writeMentions({ showCount: true });
+  scrapeArrayConcurrent(mentions, parseThreadsArg(parsedArgs.values.threads));
 } else if (typeof parsedArgs.values.slugArrayFile === "string") {
   scrapeArrayConcurrent(
     JSON.parse(
