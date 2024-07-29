@@ -15,7 +15,7 @@ copyDbFromRemote:
 	ssh "$(SSH_HOST)" bash << HERE
 		cd /home/kisaragi/goo.gl-archive/
 		make checkpoint
-		mv data.sqlite download.sqlite
+		[ -f download.sqlite ] || mv data.sqlite download.sqlite
 	HERE
 	rsync -h -P -z "$(SSH_HOST):/home/kisaragi/goo.gl-archive/download.sqlite" remote-data.sqlite
 
