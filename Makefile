@@ -6,7 +6,7 @@ rate:
 
 backup:
 	make checkpoint
-	cp data.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
+	rsync -h -P -z data.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
 
 checkpoint:
 	sqlite3 data.sqlite "pragma wal_checkpoint;"
@@ -17,7 +17,7 @@ copyDbFromRemote:
 		make checkpoint
 		mv data.sqlite download.sqlite
 	HERE
-	scp "$(SSH_HOST):/home/kisaragi/goo.gl-archive/download.sqlite" remote-data.sqlite
+	rsync -h -P -z "$(SSH_HOST):/home/kisaragi/goo.gl-archive/download.sqlite" remote-data.sqlite
 
 mergeRemoteData: copyDbFromRemote
 	bun merge.ts data.sqlite remote-data.sqlite
