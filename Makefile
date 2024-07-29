@@ -11,14 +11,15 @@ backup:
 checkpoint:
 	sqlite3 data.sqlite "pragma wal_checkpoint;"
 
-remote-data.sqlite:
+copyDbFromRemote:
 	ssh "$(SSH_HOST)" bash << HERE
 		cd /home/kisaragi/goo.gl-archive/
 		make checkpoint
+		mv data.sqlite download.sqlite
 	HERE
-	scp "$(SSH_HOST):/home/kisaragi/goo.gl-archive/data.sqlite" remote-data.sqlite
+	scp "$(SSH_HOST):/home/kisaragi/goo.gl-archive/download.sqlite" remote-data.sqlite
 
-mergeRemoteData: remote-data.sqlite
+mergeRemoteData: copyDbFromRemote
 	bun merge.ts data.sqlite remote-data.sqlite
 	rm remote-data.sqlite
 
