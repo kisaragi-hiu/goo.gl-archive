@@ -15,7 +15,7 @@ import shuffle from "lodash/shuffle";
 import { roundRobin } from "iter-tools-es";
 
 import type { Slug } from "./slugs.ts";
-import { slugs } from "./slugs.ts";
+import { slugs, slugToNumber } from "./slugs.ts";
 
 const db = new Database("data.sqlite");
 db.exec(`
@@ -371,8 +371,14 @@ Other commands:
       if (typeof minUnscraped === "undefined") {
         console.log(`${prefix ? prefix + ": " : ""}${init}~${until}: done`);
       } else {
+        const percent =
+          Math.floor(
+            100 *
+              ((slugToNumber(until) - slugToNumber(minUnscraped)) /
+                (slugToNumber(until) - slugToNumber(init))),
+          ) / 100;
         console.log(
-          `${prefix ? prefix + ": " : ""}${init}~${until}: ${minUnscraped}`,
+          `${prefix ? prefix + ": " : ""}${init}~${until}: ${minUnscraped} (${percent}%)`,
         );
       }
     }
