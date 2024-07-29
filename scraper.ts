@@ -373,10 +373,12 @@ Other commands:
       } else {
         const percent =
           Math.floor(
-            100 *
-              ((slugToNumber(until) - slugToNumber(minUnscraped)) /
+            // times 100 to convert to the written percentage (0.12 = "12"%)
+            // times another 100 to preserve 2 digits through the floor
+            10000 *
+              ((slugToNumber(minUnscraped) - slugToNumber(init)) /
                 (slugToNumber(until) - slugToNumber(init))),
-          ) / 100;
+          ) / 100; // cancel out the extra 100x
         console.log(
           `${prefix ? prefix + ": " : ""}${init}~${until}: ${minUnscraped} (${percent}%)`,
         );
