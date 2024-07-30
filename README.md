@@ -49,8 +49,8 @@
 - X0000~Y0000: pending
 - Y0000~Z0000: pending
 - Z0000~a0000: pending
-- a0000~b0000: B
-- b0000~c0000: pending
+- a0000~b0000: done
+- b0000~c0000: B
 - c0000~d0000: pending
 - d0000~e0000: pending
 - e0000~f0000: pending
