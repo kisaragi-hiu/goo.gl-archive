@@ -85,10 +85,10 @@ function slugInsert(slug: Slug, value: string | null) {
 }
 
 const errorInsertStmt = db.prepare(`
-INSERT INTO errors (slug, status) VALUES (?, ?, ?)
+INSERT INTO errors (slug, status) VALUES (?, ?)
   ON CONFLICT(slug)
   DO UPDATE SET
-    status=excluded.status,
+    status=excluded.status;
 `);
 function errorInsert(slug: Slug, status: number) {
   return errorInsertStmt.run(slug, status);
