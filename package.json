@@ -3,7 +3,6 @@
     "better-sqlite3": "^11.1.2",
     "concurrently": "^8.2.2",
     "iter-tools-es": "^7.5.3",
-    "lodash": "^4.17.21",
     "tsx": "^4.16.2"
   },
   "devDependencies": {

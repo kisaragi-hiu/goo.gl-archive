@@ -11,7 +11,6 @@ const Database = (process.isBun
 
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
-import shuffle from "lodash/shuffle";
 import { roundRobin } from "iter-tools-es";
 
 import type { Slug } from "./slugs.ts";
