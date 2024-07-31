@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
+    "@types/bun": "^1.1.6",
     "@types/lodash": "^4.17.7"
   },
   "type": "module"
