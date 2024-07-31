@@ -18,6 +18,8 @@ import type { Slug } from "./slugs.ts";
 import { slugs, slugToNumber } from "./slugs.ts";
 
 const db = new Database("data.sqlite");
+// TODO: consider dropping "message" since we're only saving statusText in it.
+// statusText is redundant with status.
 db.exec(`
 PRAGMA busy_timeout=5000;
 PRAGMA journal_mode=WAL;
