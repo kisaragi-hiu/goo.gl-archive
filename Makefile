@@ -33,8 +33,9 @@ scrapeMentions:
 	npx tsx scraper.ts --mentionsScrape
 
 currentJobsA:
-	bunx concurrently --restart-tries 5 \
-		"bun scraper.ts --scrapeJobFile jobs-A.ts --threads 128"
+	nohup bunx concurrently --restart-tries 5 \
+		"bun scraper.ts --scrapeJobFile jobs-A.ts --threads 300" \
+		>/dev/null &
 
 restartA:
 	pkill -f -9 concurrently
