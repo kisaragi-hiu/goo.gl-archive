@@ -152,10 +152,15 @@ async function scrapeSlug(slug: Slug) {
   // The "si=1" query param is offered to suppress this behavior.
   //
   // The deadline for the whole ordeal is 2025-08-25.
-  const result = await fetch(`https://goo.gl/${slug}?si=1`, {
+  const fetchUrl = `https://goo.gl/${slug}?si=1`;
+  const fetchOptions = {
     method: "head",
     redirect: "manual",
-  });
+    headers: new Headers({
+      "User-Agent": "kisaragi-hiu/goo.gl-archive",
+    }),
+  } satisfies FetchRequestInit;
+  const result = await fetch(fetchUrl, fetchOptions);
   const status = result.status;
   if (status === 301 || status === 302) {
     const location = result.headers.get("location");
