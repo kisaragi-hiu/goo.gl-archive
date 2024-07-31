@@ -85,14 +85,13 @@ function slugInsert(slug: Slug, value: string | null) {
 }
 
 const errorInsertStmt = db.prepare(`
-INSERT INTO errors (slug, status, message) VALUES (?, ?, ?)
+INSERT INTO errors (slug, status) VALUES (?, ?, ?)
   ON CONFLICT(slug)
   DO UPDATE SET
     status=excluded.status,
-    message=excluded.message;
 `);
-function errorInsert(slug: Slug, status: number, message: string) {
-  return errorInsertStmt.run(slug, status, message);
+function errorInsert(slug: Slug, status: number) {
+  return errorInsertStmt.run(slug, status);
 }
 
 /* Reading DB */
@@ -174,15 +173,15 @@ async function scrapeSlug(slug: Slug) {
   } else if (status === 400) {
     // state: generic error? Disallowed (blocked) links use this, some
     // "invalid dynamic link" errors also use this.
-    errorInsert(slug, status, result.statusText);
+    errorInsert(slug, status);
     console.log(`${slug} -> 400`);
   } else if (status === 302) {
     // state: this is an internal page. Store the status, at least.
-    errorInsert(slug, status, result.statusText);
+    errorInsert(slug, status);
     console.log(`${slug} -> ${status}`);
   } else {
     // state: what the fuck?
-    errorInsert(slug, status, result.statusText);
+    errorInsert(slug, status);
     console.log(`${slug} -> error (${status})`);
   }
 }
