@@ -16,7 +16,30 @@ import { roundRobin } from "iter-tools-es";
 import type { Slug } from "./slugs.ts";
 import { slugs, slugToNumber } from "./slugs.ts";
 
-const db = new Database("data.sqlite");
+const parsedArgs = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    threads: { type: "string" },
+
+    db: { type: "string" },
+
+    prefix: { type: "string" },
+    init: { type: "string" },
+    until: { type: "string" },
+    justOne: { type: "boolean" },
+    scrapeJobFile: { type: "string" },
+    returnProgress: { type: "boolean" },
+
+    slugArrayFile: { type: "string" },
+    rudimentaryProgress: { type: "string" },
+    help: { type: "boolean", short: "h" },
+    mentionsExport: { type: "boolean" },
+    mentionsScrape: { type: "boolean" },
+    mentionsCount: { type: "boolean" },
+  },
+});
+
+const db = new Database(parsedArgs.values.db ?? "data.sqlite");
 // TODO: consider dropping "message" since we're only saving statusText in it.
 // statusText is redundant with status.
 db.exec(`
@@ -257,27 +280,6 @@ function parseThreadsArg(raw: string | undefined, dflt: number = 8) {
   return int;
 }
 
-const parsedArgs = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    threads: { type: "string" },
-
-    prefix: { type: "string" },
-    init: { type: "string" },
-    until: { type: "string" },
-    justOne: { type: "boolean" },
-    scrapeJobFile: { type: "string" },
-    returnProgress: { type: "boolean" },
-
-    slugArrayFile: { type: "string" },
-    rudimentaryProgress: { type: "string" },
-    help: { type: "boolean", short: "h" },
-    mentionsExport: { type: "boolean" },
-    mentionsScrape: { type: "boolean" },
-    mentionsCount: { type: "boolean" },
-  },
-});
-
 function writeDoneInfo() {
   appendFileSync("done.jsonl", JSON.stringify(process.argv.slice(2)) + "\n");
 }
@@ -292,6 +294,8 @@ The default "command" is to brute force through every 1~6 char combination of
 0-9A-Za-z, starting with "0" and ending with "zzzzzz".
 
 Options:
+--db <path>: read and write data from/into this file.
+  Default: "data.sqlite"
 --threads <n>: Run this many concurrent fetches at once.
 --prefix <string>: add a prefix before the sequential slug.
   Using "--prefix foo" would brute force foo/0, foo/1, ..., foo/zzzzzz.
