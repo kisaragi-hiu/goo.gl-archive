@@ -6,7 +6,7 @@ rate:
 
 backup:
 	make checkpoint
-	rsync -h -P -z data.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
+	rsync -h -P all.sqlite "/run/media/kisaragi-hiu/Data/backup/data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
 
 checkpoint:
 	sqlite3 data.sqlite "pragma wal_checkpoint;"
