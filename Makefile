@@ -47,4 +47,5 @@ restartA:
 	nohup make currentJobsA >/dev/null &
 
 currentJobsB:
-	bun scraper.ts --scrapeJobFile jobs-B.ts --threads 32
+	bun scraper.ts --db "$$HOME/tmp/data.sqlite" \
+		--init c0000 --until d0000 --threads 32
