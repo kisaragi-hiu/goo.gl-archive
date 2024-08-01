@@ -21,11 +21,8 @@
   - Apart from `sbwz`, which is a 403 Forbidden.
 - 00000~A0000: done
 - A0000~B0000: done
-- B0000~F0000: A
-- F0000~G0000: pending
-- G0000~H0000: pending
-- H0000~I0000: pending
-- I0000~J0000: pending
+- B0000~F0000: done
+- F0000~J0000: A
 - J0000~K0000: pending
 - K0000~L0000: pending
 - L0000~M0000: pending
