@@ -11,6 +11,10 @@ backup:
 checkpoint:
 	sqlite3 data.sqlite "pragma wal_checkpoint;"
 
+check:
+	[ -f all.sqlite ] || (echo "The main file isn't present" && exit 1)
+	bun scraper.ts --db all.sqlite --scrapeJobFile blocks-done.ts --returnProgress
+
 moveRemoteData:
 	ssh "$(SSH_HOST)" bash << HERE
 		cd /home/kisaragi/goo.gl-archive/
