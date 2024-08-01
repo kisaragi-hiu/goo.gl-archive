@@ -58,7 +58,7 @@ const slugErrorStatusStmt = db.prepare(
 function slugStored(slug: Slug) {
   return (
     !!slugStoredStmt.get(slug) ||
-    [400, 500].includes(
+    [400, 500, 403].includes(
       (slugErrorStatusStmt.get(slug) as { status: number })?.status,
     )
   );
