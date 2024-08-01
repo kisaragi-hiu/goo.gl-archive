@@ -1,4 +1,4 @@
 export default [
-  // "a0000" ~ "b0000"
-  { init: "baP20", until: "c0000" },
+  // "c0000" ~ "d0000"
+  { init: "c0000", until: "d0000" },
 ];
