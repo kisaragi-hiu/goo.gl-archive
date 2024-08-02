@@ -1,4 +1,4 @@
 export default [
-  // F0000~J0000
-  { init: "F0000", until: "J0000" },
+  // J0000~N0000
+  { init: "J0000", until: "N0000" },
 ];

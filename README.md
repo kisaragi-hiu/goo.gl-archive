@@ -22,11 +22,8 @@
 - 00000~A0000: done
 - A0000~B0000: done
 - B0000~F0000: done
-- F0000~J0000: A
-- J0000~K0000: pending
-- K0000~L0000: pending
-- L0000~M0000: pending
-- M0000~N0000: pending
+- F0000~J0000: done
+- J0000~N0000: A
 - N0000~O0000: pending
 - O0000~P0000: pending
 - P0000~Q0000: pending
