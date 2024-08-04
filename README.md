@@ -24,11 +24,8 @@
 - B0000~F0000: done
 - F0000~J0000: done
 - J0000~N0000: done
-- N0000~R0000: A
-- R0000~S0000: pending
-- S0000~T0000: pending
-- T0000~U0000: pending
-- U0000~V0000: pending
+- N0000~R0000: done
+- R0000~V0000: A
 - V0000~W0000: pending
 - W0000~X0000: pending
 - X0000~Y0000: pending
