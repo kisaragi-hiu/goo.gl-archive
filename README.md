@@ -27,13 +27,10 @@
 - N0000~R0000: done
 - R0000~V0000: done
 - V0000~Z0000: A
-- Z0000~a0000: pending
+- Z0000~a0000: A
 - a0000~b0000: done
 - b0000~c0000: done
-- c0000~d0000: B
-- d0000~e0000: pending
-- e0000~f0000: pending
-- f0000~g0000: pending
+- c0000~g0000: A
 - g0000~h0000: pending
 - h0000~i0000: pending
 - i0000~j0000: pending
