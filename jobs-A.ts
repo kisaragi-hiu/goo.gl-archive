@@ -1,4 +1,1 @@
-export default [
-  { init: "Z0000", until: "a0000" },
-  { init: "c0000", until: "g0000" },
-];
+export default [{ init: "g0000", until: "l0000" }];
