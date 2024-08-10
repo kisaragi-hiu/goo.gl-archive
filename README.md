@@ -32,12 +32,8 @@
 - b0000~c0000: done
 - c0000~g0000: done
 - g0000~l0000: done
-- l0000~q0000: A
-- m0000~n0000: pending
-- n0000~o0000: pending
-- o0000~p0000: pending
-- p0000~q0000: pending
-- q0000~r0000: pending
+- l0000~q0000: done
+- q0000~v0000: A
 - r0000~s0000: pending
 - s0000~t0000: pending
 - t0000~u0000: pending

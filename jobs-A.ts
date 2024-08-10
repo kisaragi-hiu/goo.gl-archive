@@ -1,1 +1,1 @@
-export default [{ init: "l0000", until: "q0000" }];
+export default [{ init: "q0000", until: "v0000" }];
