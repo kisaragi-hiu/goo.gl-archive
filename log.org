@@ -1,5 +1,7 @@
 #+title: Log
 
+This is written after the fact, by me looking at the commit log and writing down some more details that I remember.
+
 * 2024-07-19
 
 Saw the shutdown news, thought I sort of know where to start so started trying
@@ -86,3 +88,65 @@ Remove the external slugs mechanism to try to reduce memory use. The mechanism d
 Then implement a new way to specify jobs. Instead of launching multiple processes, each responsible for a block defined by the command, I implemented a way to specify multiple blocks in a JSON file. This way one process would be able to read multiple jobs. Just as for slugArrayFile, only network requests need to actually be parallel, and they always are, so invoking the async scrape function in JS for each “job” is much more efficient. This massively reduces memory use: about 100MB per process before and after, but before this change we needed one process per job, while after this change every job runs in this process.
 
 The bottleneck is now network speed and bandwidth, as well as disk space for the database.
+
+* 2024-07-26
+
+Made a command for restarting for A. It didn't really work.
+
+* 2024-07-27
+
+Added a script for checking the current rate of storing slugs. We basically check the current slug count and compare with the slug count like 10 seconds ago, and average it out to get a per second figure. Counting the exact total number is slow, so I resort to using the highest rowid. The rowid difference should still be just as accurate as the difference of the exact number of rows.
+
+Tried to implement conversion between slugs and integers. This would make it easier to divide blocks of slugs when balancing them out.
+
+This is somewhat more complicated than just converting between base-10 and base-62. “0001” is the same number as “1”, but for slugs they are different.
+
+As I have a ground truth “next” function, I could just count up from 0 for both cases, but this predictably blows up due to time complexity.
+
+Nevertheless, this is enough for me to finally divide blocks somewhat evenly. At this point the number of blocks is still the number of concurrent fetches that can happen, and if a block finishes before another one we just end up doing less fetches at the same time, so blocks really need to be evenly divided.
+
+I wrote a =dividePortions= function for me to do that, albeit still kind of manually (as I divide them up and write them into the “jobs” file).
+
+Write the jobs in TypeScript files instead of in JSON so that we can have comments. Adding logic in there would also be fine if I find a need for them.
+
+* 2024-07-28
+
+Tried to write another version of =numberToSlug= that does some math instead of brute forcing it. I called it “seemingly not broken” in the commit message, but it turns out to break around the last slug character.
+
+I was hoping =slugToNumber= and =numberToSlug= can be used to reliably split up jobs, so I can both scrape a block of slugs somewhat evenly and also do so concurrently. But getting =numberToSlug= to work proved to be too difficult.
+
+I took another approach instead. Each concurrent fetching “thread” can simply receive the next slug to scrape from a central iterator, so that concurrent fetches are not tied to the number of jobs. This means defining blocks and balancing them out evenly is no longer necessary.
+
+Blocks are automatically evenly divided: each block definition is turned into an iterator that takes returns each slug within the block in order, and these iterators are then combined with =roundRobin= (honestly a questionable name, whatever) from =iter-tools-es=, which just returns the first value from the first iterator, first value from the second, …, second value from the first, second value from the second, etc. until all iterators are exhausted.
+
+Then we just keep ticking through the same iterator in multiple promises, and the result is a predictable number of fetches happening at the same time.
+
+This then means we can allow many concurrent fetches — much more than what I was previously doing. I was doing maybe 8 or maybe 16 blocks at once. At this point I realize it's possible to do 128 concurrent fetches at once, even on my 4G internet. This means going from something like 30 slugs a second to over 100. We're now only limited by my network speed and the rate goo.gl is willing to serve me at, and it's very easy to scale up to whatever limit there may be.
+
+* 2024-07-29 ~ 2024-07-31
+
+Fix some edge case errors, like how slug ranges didn't include the end.
+
+Add some more progress reporting options.
+
+* 2024-08-01
+
+Report user-agent to, like, be a good internet citizen.
+
+Also allow A to handle more (300) concurrent fetches. We're only really limited on network speed, and A has really fast internet access. 300 concurrent fetches turns out to be like 1100 slugs per second, and is able to go through multiple 5-character blocks (like F0000~J0000, which is 59105344 slugs) in like 15 hours. The limiting factor isn't even speed now (at least unless I want to scale to 6-character blocks), it is disk space, as A is also constrained on that.
+
+* 2024-08-02
+
+Try using different journal modes when merging multiple databases. I'm still not sure how much time this actually saves.
+
+Also treat 403 codes as having already scraped.
+
+Make it possible to verify progress in a separate file with all the data combined.
+
+Prepare to try to move remote data onto my phone after it is done on A, as I leave home for COSCUP.
+
+* 2024-08-04 ~ 2024-08-13
+
+Scraping on A and moving them onto my phone works so well that I've given up even trying to scrape on B.
+
+All the bare 5-digit blocks are done at this point, though the resulting 50 GiB of data that's sitting on my phone's SD card still needs to be moved and merged back into the main database. (Keeping 50 GiB of data on an SD card is kind of questionable).
