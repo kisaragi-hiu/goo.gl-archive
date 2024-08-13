@@ -14,7 +14,7 @@ import { parseArgs } from "node:util";
 import { roundRobin } from "iter-tools-es";
 
 import type { Slug } from "./slugs.ts";
-import { slugs, slugToNumber } from "./slugs.ts";
+import { removePrefix, slugs, slugToNumber } from "./slugs.ts";
 
 const parsedArgs = parseArgs({
   args: process.argv.slice(2),
@@ -392,7 +392,7 @@ Other commands:
       } else {
         const percent = formatPercent(
           // FIXME: minUnscraped contains the prefix if a prefix is given
-          (slugToNumber(minUnscraped) - slugToNumber(init)) /
+          (slugToNumber(removePrefix(minUnscraped, prefix)) - slugToNumber(init)) /
             (slugToNumber(until) - slugToNumber(init)),
         );
         console.log(

@@ -75,6 +75,16 @@ export function* slugs(
   }
 }
 
+/**
+ * Remove `prefix` from `slug`.
+ */
+export function removePrefix(slug: Slug, prefix: string | undefined) {
+  if (typeof prefix === "undefined") return slug;
+  // FIXME: `prefix` is parsed as a regexp. This needs RegExp.escape to be fixed
+  // (or another escaping library)
+  return slug.replace(RegExp(`^${prefix}/`), "");
+}
+
 export function slugToNumber(slug: Slug): number {
   const reversed = [...slug].reverse();
   const len = slug.length;
