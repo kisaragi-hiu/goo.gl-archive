@@ -23,7 +23,7 @@ moveRemoteData:
 	HERE
 	rsync -h -P -z \
 		"$(SSH_HOST):/home/kisaragi/goo.gl-archive/download.sqlite" \
-		"/storage/7D36-175C/remote-data-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
+		"/storage/7D36-175C/remote-data-$$(npx tsx jobs-A-to-string.ts)-$$(date '+%Y%m%dT%H%M%S%z').sqlite"
 	ssh "$(SSH_HOST)" bash << HERE
 		cd /home/kisaragi/goo.gl-archive/
 		[ -f download.sqlite ] && rm download.sqlite
