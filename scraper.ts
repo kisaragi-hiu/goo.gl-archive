@@ -391,8 +391,8 @@ Other commands:
         console.log(`${prefix ? prefix + ": " : ""}${init}~${until}: done`);
       } else {
         const percent = formatPercent(
-          // FIXME: minUnscraped contains the prefix if a prefix is given
-          (slugToNumber(removePrefix(minUnscraped, prefix)) - slugToNumber(init)) /
+          (slugToNumber(removePrefix(minUnscraped, prefix)) -
+            slugToNumber(init)) /
             (slugToNumber(until) - slugToNumber(init)),
         );
         console.log(
