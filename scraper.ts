@@ -210,7 +210,7 @@ async function scrapeSlug(slug: Slug) {
     if (typeof location === "string") {
       // state: resolved to a URL
       slugInsert(slug, location);
-      console.log(`${slug} -> ${location}`);
+      // console.log(`${slug} -> ${location}`);
     } else {
       // state: 301/302 but no location
     }
