@@ -9,12 +9,7 @@ const Database = (process.isBun
   ? (await import("bun:sqlite")).Database
   : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
 
-import {
-  appendFileSync,
-  readFileSync,
-  writeFileSync,
-  existsSync,
-} from "node:fs";
+import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { roundRobin } from "iter-tools-es";
 
@@ -27,7 +22,6 @@ const parsedArgs = parseArgs({
     threads: { type: "string" },
 
     db: { type: "string" },
-    compress: { type: "boolean" },
 
     prefix: { type: "string" },
     init: { type: "string" },
@@ -51,23 +45,9 @@ const db = new Database(parsedArgs.values.db ?? "data.sqlite");
 db.exec(`
 PRAGMA busy_timeout=5000;
 PRAGMA journal_mode=WAL;
-CREATE TABLE IF NOT EXISTS mapping (slug TEXT PRIMARY KEY, value TEXT);
-CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER);
+CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
+CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
 `);
-
-if (parsedArgs.values.compress) {
-  if (existsSync("libsqlite_zstd.so")) {
-    db.loadExtension("./libsqlite_zstd.so");
-    db.exec(`
-select zstd_enable_transparent('{"table": "mapping",
-    "column": "value", "compression_level": 19,
-    "dict_chooser": "''i'' || (rowid / 1000000)"}');
-select zstd_incremental_maintenance(null, 1);
-`);
-  } else {
-    throw new Error("Specified --compress but sqlite-zstd not found");
-  }
-}
 
 /**
  * Split `arr` into a fixed number of sublists.
@@ -210,7 +190,7 @@ async function scrapeSlug(slug: Slug) {
     if (typeof location === "string") {
       // state: resolved to a URL
       slugInsert(slug, location);
-      // console.log(`${slug} -> ${location}`);
+      console.log(`${slug} -> ${location}`);
     } else {
       // state: 301/302 but no location
     }
@@ -268,7 +248,6 @@ async function scrape(
       workers.push(0);
     }
   }
-  let lastCompress = 0;
   await Promise.all(
     workers.map(async () => {
       let next = iterator.next();
@@ -281,14 +260,6 @@ async function scrape(
         }
         if (justOne && !allSkippedSoFar) {
           break;
-        }
-        if (parsedArgs.values.compress) {
-          if (lastCompress > 100000) {
-            db.exec("select zstd_incremental_maintenance(null, 1);");
-            lastCompress = 0;
-          } else {
-            lastCompress++;
-          }
         }
         if (typeof slugFn !== "undefined") {
           slugFn(slug);
