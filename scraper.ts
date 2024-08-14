@@ -9,7 +9,12 @@ const Database = (process.isBun
   ? (await import("bun:sqlite")).Database
   : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
 
-import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  appendFileSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+} from "node:fs";
 import { parseArgs } from "node:util";
 import { roundRobin } from "iter-tools-es";
 
@@ -22,6 +27,7 @@ const parsedArgs = parseArgs({
     threads: { type: "string" },
 
     db: { type: "string" },
+    compress: { type: "boolean" },
 
     prefix: { type: "string" },
     init: { type: "string" },
@@ -48,6 +54,20 @@ PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
 CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
 `);
+
+if (parsedArgs.values.compress) {
+  if (existsSync("libsqlite_zstd.so")) {
+    db.loadExtension("libsqlite_zstd.so");
+    db.exec(`
+select zstd_enable_transparent('{"table": "mapping",
+    "column": "value", "compression_level": 19,
+    "dict_chooser": "''a''}');
+select zstd_incremental_maintenance(null, 1);
+`);
+  } else {
+    console.log("Specified --compress but sqlite-zstd not found");
+  }
+}
 
 /**
  * Split `arr` into a fixed number of sublists.
