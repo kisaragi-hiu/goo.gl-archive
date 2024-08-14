@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEX
 
 if (parsedArgs.values.compress) {
   if (existsSync("libsqlite_zstd.so")) {
-    db.loadExtension("libsqlite_zstd");
+    db.loadExtension("./libsqlite_zstd.so");
     db.exec(`
 select zstd_enable_transparent('{"table": "mapping",
     "column": "value", "compression_level": 19,
