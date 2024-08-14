@@ -6,6 +6,10 @@ const Database = (process.isBun
   : (await import("better-sqlite3")).default) as unknown as typeof BunDatabase;
 
 const db = new Database("data.sqlite");
+if (existsSync("libsqlite_zstd.so")) {
+  db.loadExtension("./libsqlite_zstd.so");
+} else {
+}
 const rl = new Readline(process.stdout, { autoCommit: true });
 
 // Take advantage of the fact that we're using auto increment
