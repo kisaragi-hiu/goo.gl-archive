@@ -61,7 +61,7 @@ if (parsedArgs.values.compress) {
     db.exec(`
 select zstd_enable_transparent('{"table": "mapping",
     "column": "value", "compression_level": 19,
-    "dict_chooser": "rowid/100000"}');
+    "dict_chooser": "''i'' || (rowid / 1000000)"}');
 select zstd_incremental_maintenance(null, 1);
 `);
   } else {
