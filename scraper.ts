@@ -268,6 +268,7 @@ async function scrape(
       workers.push(0);
     }
   }
+  let lastCompress = 0;
   await Promise.all(
     workers.map(async () => {
       let next = iterator.next();
@@ -282,7 +283,12 @@ async function scrape(
           break;
         }
         if (parsedArgs.values.compress) {
-          db.exec("select zstd_incremental_maintenance(null, 1);");
+          if (lastCompress > 1000) {
+            db.exec("select zstd_incremental_maintenance(null, 1);");
+            lastCompress = 0;
+          } else {
+            lastCompress++;
+          }
         }
         if (typeof slugFn !== "undefined") {
           slugFn(slug);
