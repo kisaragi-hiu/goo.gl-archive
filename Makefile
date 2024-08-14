@@ -38,7 +38,7 @@ scrapeMentions:
 
 currentJobsA:
 	nohup bunx concurrently --restart-tries 5 \
-		"bun scraper.ts --scrapeJobFile jobs-A.ts --threads 300" \
+		"bun scraper.ts --scrapeJobFile jobs-A.ts --threads 1200" \
 		>/dev/null &
 
 restartA:
