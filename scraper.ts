@@ -61,7 +61,7 @@ if (parsedArgs.values.compress) {
     db.exec(`
 select zstd_enable_transparent('{"table": "mapping",
     "column": "value", "compression_level": 19,
-    "dict_chooser": "''a''}');
+    "dict_chooser": "rowid/100000"}');
 select zstd_incremental_maintenance(null, 1);
 PRAGMA auto_vacuum=full;
 `);
@@ -284,7 +284,7 @@ async function scrape(
           break;
         }
         if (parsedArgs.values.compress) {
-          if (lastCompress > 1000) {
+          if (lastCompress > 100000) {
             db.exec("select zstd_incremental_maintenance(null, 1);");
             lastCompress = 0;
           } else {
