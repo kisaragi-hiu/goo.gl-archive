@@ -1,5 +1,6 @@
 import type { Database as BunDatabase } from "bun:sqlite";
 import { Readline } from "node:readline/promises";
+import { existsSync } from "node:fs";
 
 const Database = (process.isBun
   ? (await import("bun:sqlite")).Database
