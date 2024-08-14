@@ -44,7 +44,7 @@ libsqlite_zstd.so:
 
 currentJobsA: libsqlite_zstd.so
 	nohup bunx concurrently --restart-tries 5 \
-		"bun scraper.ts --scrapeJobFile jobs-A.ts --compress --threads 350" \
+		"bun scraper.ts --scrapeJobFile jobs-A.ts --threads 350" \
 		>/dev/null &
 
 restartA:
