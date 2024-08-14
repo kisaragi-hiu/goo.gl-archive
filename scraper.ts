@@ -63,7 +63,6 @@ select zstd_enable_transparent('{"table": "mapping",
     "column": "value", "compression_level": 19,
     "dict_chooser": "rowid/100000"}');
 select zstd_incremental_maintenance(null, 1);
-PRAGMA auto_vacuum=full;
 `);
   } else {
     throw new Error("Specified --compress but sqlite-zstd not found");
