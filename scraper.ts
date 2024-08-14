@@ -51,8 +51,8 @@ const db = new Database(parsedArgs.values.db ?? "data.sqlite");
 db.exec(`
 PRAGMA busy_timeout=5000;
 PRAGMA journal_mode=WAL;
-CREATE TABLE IF NOT EXISTS mapping (slug TEXT UNIQUE, value TEXT);
-CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER, message TEXT);
+CREATE TABLE IF NOT EXISTS mapping (slug TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE IF NOT EXISTS errors (slug TEXT UNIQUE, status INTEGER);
 `);
 
 if (parsedArgs.values.compress) {
