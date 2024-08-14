@@ -65,7 +65,7 @@ select zstd_enable_transparent('{"table": "mapping",
 select zstd_incremental_maintenance(null, 1);
 `);
   } else {
-    console.log("Specified --compress but sqlite-zstd not found");
+    throw new Error("Specified --compress but sqlite-zstd not found");
   }
 }
 
@@ -280,6 +280,9 @@ async function scrape(
         }
         if (justOne && !allSkippedSoFar) {
           break;
+        }
+        if (parsedArgs.values.compress) {
+          db.exec("select zstd_incremental_maintenance(null, 1);");
         }
         if (typeof slugFn !== "undefined") {
           slugFn(slug);
