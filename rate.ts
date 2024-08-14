@@ -16,8 +16,8 @@ const rl = new Readline(process.stdout, { autoCommit: true });
 // Take advantage of the fact that we're using auto increment
 // This is way faster than select count().
 const entryCountStmt = db.prepare(`
-select rowid from mapping
-order by rowid desc
+select id from mapping
+order by id desc
 limit 1;`);
 let lastCountedTime = new Date();
 let lastCount = 0;
