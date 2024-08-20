@@ -1,4 +1,5 @@
 SSH_HOST := kisaragi@git.kisaragi-hiu.com
+.SHELLFLAGS := -ec
 .ONESHELL:
 
 rate:
