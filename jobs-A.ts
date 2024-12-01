@@ -1,3 +1,4 @@
+// vim: norelativenumber
 const blocks = [
   { prefix: "fb", init: "00000", until: "10000" },
   { prefix: "fb", init: "10000", until: "20000" },
@@ -63,4 +64,4 @@ const blocks = [
   { prefix: "fb", init: "z0000", until: "000000" },
 ];
 
-export default [...blocks.slice(13, 16)];
+export default [...blocks.slice(13, 16)]; // D0000~G0000
