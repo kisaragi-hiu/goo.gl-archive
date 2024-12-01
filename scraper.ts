@@ -16,6 +16,8 @@ import { roundRobin } from "iter-tools-es";
 import type { Slug } from "./slugs.ts";
 import { removePrefix, slugs, slugToNumber } from "./slugs.ts";
 
+let verbose = true;
+
 const parsedArgs = parseArgs({
   args: process.argv.slice(2),
   options: {
@@ -33,11 +35,16 @@ const parsedArgs = parseArgs({
     slugArrayFile: { type: "string" },
     rudimentaryProgress: { type: "string" },
     help: { type: "boolean", short: "h" },
+    quiet: { type: "boolean", short: "q" },
     mentionsExport: { type: "boolean" },
     mentionsScrape: { type: "boolean" },
     mentionsCount: { type: "boolean" },
   },
 });
+
+if (parsedArgs.values.quiet) {
+  verbose = false;
+}
 
 const db = new Database(parsedArgs.values.db ?? "data.sqlite");
 // TODO: consider dropping "message" since we're only saving statusText in it.
@@ -190,27 +197,27 @@ async function scrapeSlug(slug: Slug) {
     if (typeof location === "string") {
       // state: resolved to a URL
       slugInsert(slug, location);
-      console.log(`${slug} -> ${location}`);
+      if (verbose) console.log(`${slug} -> ${location}`);
     } else {
       // state: 301/302 but no location
     }
   } else if (status === 404) {
     // state: resolved to no mapping
     slugInsert(slug, null);
-    console.log(`${slug} -> NULL`);
+    if (verbose) console.log(`${slug} -> NULL`);
   } else if (status === 400) {
     // state: generic error? Disallowed (blocked) links use this, some
     // "invalid dynamic link" errors also use this.
     errorInsert(slug, status);
-    console.log(`${slug} -> 400`);
+    if (verbose) console.log(`${slug} -> 400`);
   } else if (status === 302) {
     // state: this is an internal page. Store the status, at least.
     errorInsert(slug, status);
-    console.log(`${slug} -> ${status}`);
+    if (verbose) console.log(`${slug} -> ${status}`);
   } else {
     // state: what the fuck?
     errorInsert(slug, status);
-    console.log(`${slug} -> error (${status})`);
+    if (verbose) console.log(`${slug} -> error (${status})`);
   }
 }
 
@@ -294,6 +301,8 @@ The default "command" is to brute force through every 1~6 char combination of
 0-9A-Za-z, starting with "0" and ending with "zzzzzz".
 
 Options:
+--quiet: Don't print progress messages for each collected slug.
+  Default: off (this tool is verbose by default)
 --db <path>: read and write data from/into this file.
   Default: "data.sqlite"
 --threads <n>: Run this many concurrent fetches at once.
