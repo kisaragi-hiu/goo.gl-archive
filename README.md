@@ -16,29 +16,14 @@
 
 ## Progress
 
-- 0~0000: done
-- 0000~00000: done
+The goal is 0~000000 and fb/0~fb/000000.
+
+- 0~000000: done
   - Apart from `sbwz`, which is a 403 Forbidden.
-- 00000~A0000: done
-- A0000~B0000: done
-- B0000~F0000: done
-- F0000~J0000: done
-- J0000~N0000: done
-- N0000~R0000: done
-- R0000~V0000: done
-- V0000~Z0000: done
-- Z0000~a0000: done
-- a0000~b0000: done
-- b0000~c0000: done
-- c0000~g0000: done
-- g0000~l0000: done
-- l0000~q0000: done
-- q0000~v0000: done
-- v0000~000000: done
 - 000000~zzzzzz: pending
-- fb/0~0000: done
-- fb/0000~00000: done
-- fb/00000~zzzzzz: pending
+- fb/0~D0000: done
+- fb/D0000~000000: pending
+- fb/000000~fb/zzzzzz: pending
 
 ## Schema
 

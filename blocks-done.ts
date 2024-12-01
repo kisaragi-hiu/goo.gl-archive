@@ -62,5 +62,9 @@ export default [
   // { init: "x0000", until: "y0000" },
   // { init: "y0000", until: "z0000" },
   // { init: "z0000", until: "000000" },
-  // { prefix: "fb", init: "0", until: "00000", prefix: "fb" },
+  // { prefix: "fb", init: "0", until: "00000" },
+  // { prefix: "fb", init: "00000", until: "40000" },
+  // { prefix: "fb", init: "40000", until: "70000" },
+  // { prefix: "fb", init: "70000", until: "A0000" },
+  // { prefix: "fb", init: "A0000", until: "D0000" },
 ];
