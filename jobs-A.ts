@@ -64,4 +64,4 @@ const blocks = [
   { prefix: "fb", init: "z0000", until: "000000" },
 ];
 
-export default [...blocks.slice(13, 16)]; // D0000~G0000
+export default [...blocks.slice(16, 19)]; // D0000~G0000
