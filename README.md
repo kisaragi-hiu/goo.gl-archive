@@ -1,3 +1,13 @@
+# Update 2025-11-14
+
+Obviously this update came *after* the shutdown.
+
+This attempt produced a ~100GiB SQLite file, but it's only a very small portion of what was served. A complete archive exists, please just use that:
+
+https://wiki.archiveteam.org/index.php/Goo.gl
+
+---
+
 # An attempt at archiving goo.gl
 
 ## Archived links
